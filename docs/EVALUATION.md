@@ -10,6 +10,10 @@
 
 No evaluation harness. Tests cover graph contracts and synthetic fixtures only. They are not model-integration tests and not accuracy benchmarks.
 
+## D1
+
+No accuracy evaluation. Manifest and rights tests are contract checks, not license verification and not diarization/transcription benchmarks. Synthetic tones, when added, prove ingestion behavior only.
+
 ## Later
 
 Evaluation should consume caller-supplied references (for example RTTM or similarly licensed annotations), never data from the private research tree. Reports belong under `outputs/` locally, not in git.

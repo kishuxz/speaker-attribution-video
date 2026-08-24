@@ -41,7 +41,7 @@ speaker-attribution-video = "speaker_attribution_video.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-speaker_attribution_video = ["py.typed", "graph/schemas/*.json"]
+speaker_attribution_video = ["py.typed", "graph/schemas/*.json", "data/schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

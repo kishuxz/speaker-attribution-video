@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://speaker-attribution-video.example/schemas/media_manifest.d1.v1.json",
+  "title": "MediaManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "namespace_id",
+    "job_id",
+    "artifact_id",
+    "manifest_id",
+    "ingestion_event_id",
+    "source",
+    "rights",
+    "sensitivity",
+    "logical_filename",
+    "media_type_status",
+    "byte_size",
+    "content_sha256",
+    "ingested_at",
+    "connector_name",
+    "connector_version",
+    "configuration_fingerprint",
+    "redaction",
+    "warnings"
+  ],
+  "properties": {
+    "schema_version": { "const": "d1.manifest.v1", "type": "string" },
+    "namespace_id": { "type": "string", "minLength": 1 },
+    "job_id": { "type": "string", "minLength": 1 },
+    "artifact_id": { "type": "string", "minLength": 1 },
+    "manifest_id": { "type": "string", "minLength": 1 },
+    "ingestion_event_id": { "type": "string", "minLength": 1 },
+    "source": { "$ref": "#/$defs/SourceDescriptor" },
+    "rights": { "$ref": "#/$defs/RightsRecord" },
+    "sensitivity": { "$ref": "#/$defs/DataSensitivity" },
+    "logical_filename": { "type": "string", "minLength": 1 },
+    "media_type_status": { "$ref": "#/$defs/MediaTypeStatus" },
+    "media_type_declared": { "type": "string" },
+    "media_type_detected": { "type": "string" },
+    "byte_size": { "type": "integer", "minimum": 0 },
+    "content_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "duration_us": { "type": "integer", "minimum": 0 },
+    "audio_stream": { "$ref": "#/$defs/StreamMetadata" },
+    "video_stream": { "$ref": "#/$defs/StreamMetadata" },
+    "ingested_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6}Z$"
+    },
+    "connector_name": { "type": "string", "minLength": 1 },
+    "connector_version": { "type": "string", "minLength": 1 },
+    "configuration_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "redaction": { "$ref": "#/$defs/RedactionState" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "SourceType": {
+      "type": "string",
+      "enum": [
+        "SYNTHETIC",
+        "LOCAL_USER_FILE",
+        "USER_PROVIDED_DATASET",
+        "PUBLIC_DATASET_REFERENCE",
+        "RESEARCH_RESTRICTED",
+        "UNKNOWN"
+      ]
+    },
+    "AcquisitionMethod": {
+      "type": "string",
+      "enum": ["generated", "user_copy", "declared_reference", "unknown"]
+    },
+    "RightsVerification": {
+      "type": "string",
+      "enum": ["VERIFIED", "USER_ATTESTED", "UNVERIFIED", "RESTRICTED", "PROHIBITED"]
+    },
+    "DataSensitivity": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "SYNTHETIC",
+        "INTERNAL",
+        "CONFIDENTIAL",
+        "RESTRICTED",
+        "PERSONAL_DATA",
+        "BIOMETRIC_DATA",
+        "UNKNOWN"
+      ]
+    },
+    "RedactionState": {
+      "type": "string",
+      "enum": ["none", "logical_names", "paths_excluded", "contents_excluded"]
+    },
+    "MediaTypeStatus": {
+      "type": "string",
+      "enum": ["declared", "detected", "unknown"]
+    },
+    "StreamMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sample_rate_hz": { "type": "integer", "minimum": 1 },
+        "channels": { "type": "integer", "minimum": 1 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "codec": { "type": "string" }
+      }
+    },
+    "SourceDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "source_type",
+        "provider",
+        "logical_ref",
+        "acquisition_method",
+        "acquired_at"
+      ],
+      "properties": {
+        "schema_version": { "type": "string" },
+        "source_id": { "type": "string" },
+        "source_type": { "$ref": "#/$defs/SourceType" },
+        "provider": { "type": "string" },
+        "logical_ref": { "type": "string" },
+        "acquisition_method": { "$ref": "#/$defs/AcquisitionMethod" },
+        "acquired_at": { "type": "string" },
+        "declared_owner": { "type": "string" },
+        "provenance_notes": { "type": "string" },
+        "source_revision": { "type": "string" },
+        "source_checksum": { "type": "string" }
+      }
+    },
+    "RightsRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "verification"],
+      "properties": {
+        "schema_version": { "type": "string" },
+        "verification": { "$ref": "#/$defs/RightsVerification" },
+        "license_id": { "type": "string" },
+        "license_ref": { "type": "string" },
+        "redistribution_permitted": { "type": "boolean" },
+        "derivative_use_permitted": { "type": "boolean" },
+        "commercial_use_permitted": { "type": "boolean" },
+        "research_only": { "type": "boolean" },
+        "attribution_required": { "type": "boolean" },
+        "consent_required": { "type": "boolean" },
+        "terms_accepted_by": { "type": "string" },
+        "terms_accepted_at": { "type": "string" },
+        "expires_at": { "type": "string" },
+        "reviewer_note": { "type": "string" }
+      }
+    }
+  }
+}

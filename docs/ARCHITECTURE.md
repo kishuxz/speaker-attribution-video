@@ -1,14 +1,19 @@
 # Architecture
 
-**G1 implements the evidence graph contracts in the center of this diagram.** T1 adds verification around those contracts. Surrounding runtime boxes are planned and are not executable in this repository yet.
+**G1 implements the evidence graph contracts in the center of this diagram.** T1 adds verification around those contracts. D1A/D1B add source, rights, sensitivity, and media-manifest contracts. Surrounding runtime boxes are planned and are not executable in this repository yet.
 
 ```
                     caller media (not in git)
                               │
                               ▼
                  ┌────────────────────────┐
+                 │ D1 ingestion boundary  │  contracts in progress
+                 │ manifests / rights     │  (no media decode)
+                 └───────────┬────────────┘
+                             │
+                 ┌────────────────────────┐
                  │ Deterministic signals  │  planned
-                 │ diarization / ASR      │  (not T1)
+                 │ diarization / ASR      │  (not D1)
                  └───────────┬────────────┘
                              │
      planned video ─ ─ ─ ─ ─ ┤
@@ -26,10 +31,10 @@
                              │
                  ┌───────────┴────────────┐
                  │ Bounded agents         │  planned
-                 │ + observability        │  (not T1)
+                 │ + observability        │  (not D1)
                  └────────────────────────┘
 ```
 
-T1 implements **contracts and deterministic test doubles only**. It does not run audio or models. Overlapping speech is **representable** but not processed. Sensitive content is hashed, redacted, externally referenced, or explicitly classified if embedded.
+D1 describes artifacts. It does not run audio or models. Overlapping speech is **representable** but not processed. Sensitive content is hashed, redacted, externally referenced, or explicitly classified if embedded.
 
-Python **3.11** is the only supported runtime. A local Python 3.14 interpreter is an environment mismatch, not a product failure. See `docs/GRAPH.md`, `docs/BACKEND_CONTRACTS.md`, and `docs/TESTING.md`.
+Python **3.11** is the only supported runtime. A local Python 3.14 interpreter is an environment mismatch, not a product failure. See `docs/GRAPH.md`, `docs/INGESTION.md`, `docs/BACKEND_CONTRACTS.md`, and `docs/TESTING.md`.

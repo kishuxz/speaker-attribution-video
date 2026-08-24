@@ -53,6 +53,7 @@ def test_verify_step_order_is_stable() -> None:
         "coverage-check",
         "coverage-graph-core",
         "json-schema-drift",
+        "data-manifest-schema-drift",
     ]
 
 
@@ -75,12 +76,14 @@ def test_inspect_wheel_requires_schema_and_excludes_tests(tmp_path: Path) -> Non
     with zipfile.ZipFile(wheel, "w") as archive:
         archive.writestr("speaker_attribution_video/py.typed", "")
         archive.writestr("speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json", "{}")
+        archive.writestr("speaker_attribution_video/data/schemas/media_manifest.d1.v1.json", "{}")
         archive.writestr("speaker_attribution_video/cli.py", "x=1\n")
     verify.inspect_wheel(wheel)
     bad = tmp_path / "bad.whl"
     with zipfile.ZipFile(bad, "w") as archive:
         archive.writestr("speaker_attribution_video/py.typed", "")
         archive.writestr("speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json", "{}")
+        archive.writestr("speaker_attribution_video/data/schemas/media_manifest.d1.v1.json", "{}")
         archive.writestr("tests/secret.py", "assert False\n")
     with pytest.raises(verify.StepFailure):
         verify.inspect_wheel(bad)

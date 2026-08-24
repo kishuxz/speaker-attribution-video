@@ -1,5 +1,10 @@
 # Limitations
 
+- **D1 implements data contracts only in this PR sequence.** There is no media decode, ffmpeg, network dataset connector, or model processing.
+- Local ingestion is **not** license verification. User attestation is **not** independent verification. The policy engine is **not** legal advice.
+- Snapshots, when added, contain manifests, not media.
+- Synthetic tones are **not** accuracy benchmarks.
+- Historical television research data is **not** part of this repository.
 - **T1 implements contracts and deterministic test doubles only.** There is no real audio or model processing.
 - Conformance passing does **not** prove model accuracy.
 - Coverage is evidence of execution, **not** correctness.
@@ -15,4 +20,4 @@
 - Third-party tools (pyannote, WhisperX, Llama, ECAPA) have their own hardware, license, and quality limits and are not integrated.
 - Python **3.11** is the only supported runtime. Local Python 3.14 is an environment mismatch, not a product failure.
 - CI is Linux (Ubuntu) on Python 3.11. macOS is not a verified claim.
-- This repository is private during T1; Apache-2.0 on original source does not imply a public release.
+- This repository is private during D1; Apache-2.0 on original source does not imply a public release.

@@ -27,6 +27,7 @@ JOB_NAMES = ("quality", "tests", "package", "security-public-tree")
 REQUIRED_WHEEL_PATHS = (
     "speaker_attribution_video/py.typed",
     "speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json",
+    "speaker_attribution_video/data/schemas/media_manifest.d1.v1.json",
 )
 FORBIDDEN_ARCHIVE_PREFIXES = (
     "tests/",
@@ -48,6 +49,7 @@ JOB_STEPS: dict[str, frozenset[str]] = {
             "coverage-check",
             "coverage-graph-core",
             "json-schema-drift",
+            "data-manifest-schema-drift",
         }
     ),
     "package": frozenset(
@@ -93,6 +95,15 @@ STEPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "-c",
             "from speaker_attribution_video.graph.serialize import assert_schema_drift_free; "
             "assert_schema_drift_free(); print('schema-drift-ok')",
+        ),
+    ),
+    (
+        "data-manifest-schema-drift",
+        (
+            "-c",
+            "from speaker_attribution_video.data.serialize import "
+            "assert_manifest_schema_drift_free; "
+            "assert_manifest_schema_drift_free(); print('data-manifest-schema-drift-ok')",
         ),
     ),
 )
@@ -219,6 +230,12 @@ def inspect_sdist(sdist: Path) -> None:
     if not any(name.endswith("graph/schemas/evidence_graph.g1.v1.json") for name in names):
         print("FAILED step='inspect-package' exit=1 cmd='sdist missing JSON Schema'", flush=True)
         raise StepFailure(1)
+    if not any(name.endswith("data/schemas/media_manifest.d1.v1.json") for name in names):
+        print(
+            "FAILED step='inspect-package' exit=1 cmd='sdist missing media manifest JSON Schema'",
+            flush=True,
+        )
+        raise StepFailure(1)
     if not any(name.endswith("py.typed") for name in names):
         print("FAILED step='inspect-package' exit=1 cmd='sdist missing py.typed'", flush=True)
         raise StepFailure(1)
@@ -273,6 +290,7 @@ def clean_wheel_install(wheel: Path) -> None:
                 "import speaker_attribution_video.backends; "
                 "import speaker_attribution_video.cli; "
                 "import speaker_attribution_video.graph; "
+                "import speaker_attribution_video.data; "
                 "import speaker_attribution_video.integrations; "
                 "from speaker_attribution_video import __version__; "
                 "from speaker_attribution_video.cli import main; "
