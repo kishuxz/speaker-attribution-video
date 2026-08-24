@@ -99,6 +99,8 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S108"]
 "scripts/**" = ["S603", "S607"]
+"src/speaker_attribution_video/backends/conformance/**" = ["S101", "TRY301"]
+"src/speaker_attribution_video/backends/testing/broken.py" = ["S101", "BLE001"]
 
 [tool.ruff.format]
 quote-style = "double"
