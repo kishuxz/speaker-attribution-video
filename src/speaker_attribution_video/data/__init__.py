@@ -42,6 +42,7 @@ from speaker_attribution_video.data.enums import (
     SourceType,
 )
 from speaker_attribution_video.data.errors import DataContractError
+from speaker_attribution_video.data.graph import graph_from_accepted_ingestion
 from speaker_attribution_video.data.ids import (
     ArtifactId,
     DatasetId,
@@ -139,6 +140,7 @@ __all__ = [
     "canonical_bytes",
     "canonical_dumps_manifest",
     "evaluate_policy",
+    "graph_from_accepted_ingestion",
     "loads_manifest",
     "make_dataset_manifest",
     "make_ingestion_snapshot",
