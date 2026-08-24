@@ -113,3 +113,41 @@ class ConnectorFailureReason(str, Enum):
     CHANGED_DURING_READ = "changed_during_read"
     IO_FAILURE = "io_failure"
     PATH_ESCAPE = "path_escape"
+
+
+class PolicyOperation(str, Enum):
+    INGEST = "INGEST"
+    TRAIN = "TRAIN"
+    EVALUATE = "EVALUATE"
+    DEMO = "DEMO"
+    REDISTRIBUTE = "REDISTRIBUTE"
+    EXPORT_METADATA = "EXPORT_METADATA"
+
+
+class PolicyDecision(str, Enum):
+    ALLOW = "ALLOW"
+    DENY = "DENY"
+    REQUIRES_REVIEW = "REQUIRES_REVIEW"
+
+
+class PolicyReason(str, Enum):
+    """Stable policy reason codes. Not legal advice."""
+
+    PROHIBITED_RIGHTS = "prohibited-rights"
+    UNKNOWN_REDISTRIBUTION = "unknown-redistribution"
+    RESEARCH_ONLY_PUBLIC_USE = "research-only-public-use"
+    RESEARCH_RESTRICTED = "research-restricted"
+    BIOMETRIC_OR_PERSONAL_REVIEW = "biometric-or-personal-review"
+    PERSONAL_DATA_DEMO = "personal-data-demo"
+    SYNTHETIC_PROJECT_PROVENANCE = "synthetic-project-provenance"
+    SYNTHETIC_TRAINING_REVIEW = "synthetic-training-review"
+    UNVERIFIED_TERMS = "unverified-terms"
+    USER_ATTESTED_INGEST = "user-attested-ingest"
+    USER_ATTESTED_REVIEW = "user-attested-review"
+    VERIFIED_ALLOW = "verified-allow"
+    TRAINING_REVIEW = "training-review"
+    LICENSE_EXPIRED = "license-expired"
+    CONSENT_REQUIRED = "consent-required"
+    UNKNOWN_SENSITIVITY = "unknown-sensitivity"
+    UNKNOWN_DEFAULT_DENY = "unknown-default-deny"
+    RESTRICTED_RIGHTS = "restricted-rights"

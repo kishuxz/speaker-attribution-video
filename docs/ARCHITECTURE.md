@@ -1,6 +1,6 @@
 # Architecture
 
-**G1 implements the evidence graph contracts in the center of this diagram.** T1 adds verification around those contracts. D1 adds source, rights, sensitivity, media-manifest, dataset, and snapshot contracts plus local-file and synthetic connectors. Surrounding media-processing boxes are planned and are not executable in this repository yet.
+**G1 implements the evidence graph contracts in the center of this diagram.** T1 adds verification around those contracts. D1 adds source, rights, sensitivity, media-manifest, dataset, and snapshot contracts, local-file and synthetic connectors, a manifest-only snapshot store, and a fail-closed policy evaluator. Surrounding media-processing boxes are planned and are not executable in this repository yet.
 
 ```
                     caller media (not in git)

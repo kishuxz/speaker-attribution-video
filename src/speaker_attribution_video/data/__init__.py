@@ -2,7 +2,7 @@
 
 These contracts describe artifacts. They do not process audio or video,
 download datasets, or grant legal rights. User attestation is not independent
-verification. The later policy engine is not legal advice.
+verification. The policy engine is not legal advice.
 """
 
 from __future__ import annotations
@@ -34,6 +34,9 @@ from speaker_attribution_video.data.enums import (
     IngestionState,
     IntendedUse,
     MediaTypeStatus,
+    PolicyDecision,
+    PolicyOperation,
+    PolicyReason,
     RedactionState,
     RightsVerification,
     SourceType,
@@ -52,6 +55,7 @@ from speaker_attribution_video.data.manifest import (
     StreamMetadata,
     make_media_manifest,
 )
+from speaker_attribution_video.data.policy import PolicyResult, evaluate_policy
 from speaker_attribution_video.data.rights import RightsRecord, project_fixture_rights
 from speaker_attribution_video.data.sensitivity import (
     can_transition,
@@ -72,6 +76,7 @@ from speaker_attribution_video.data.snapshot import (
     make_ingestion_snapshot,
 )
 from speaker_attribution_video.data.source import SourceDescriptor, make_source
+from speaker_attribution_video.data.store import ManifestSnapshotStore
 from speaker_attribution_video.data.versions import (
     DATASET_SCHEMA_VERSION,
     MANIFEST_SCHEMA_VERSION,
@@ -111,8 +116,13 @@ __all__ = [
     "InspectRequest",
     "IntendedUse",
     "ManifestId",
+    "ManifestSnapshotStore",
     "MediaManifest",
     "MediaTypeStatus",
+    "PolicyDecision",
+    "PolicyOperation",
+    "PolicyReason",
+    "PolicyResult",
     "RedactionState",
     "RightsRecord",
     "RightsVerification",
@@ -128,6 +138,7 @@ __all__ = [
     "can_transition",
     "canonical_bytes",
     "canonical_dumps_manifest",
+    "evaluate_policy",
     "loads_manifest",
     "make_dataset_manifest",
     "make_ingestion_snapshot",
