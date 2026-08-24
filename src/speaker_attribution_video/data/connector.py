@@ -14,10 +14,12 @@ from speaker_attribution_video.backends.contracts import (
 from speaker_attribution_video.data.enums import (
     ConnectorCapability,
     ConnectorFailureReason,
+    DataSensitivity,
     IngestionState,
 )
 from speaker_attribution_video.data.errors import DataContractError
 from speaker_attribution_video.data.manifest import MediaManifest
+from speaker_attribution_video.data.rights import RightsRecord
 from speaker_attribution_video.data.snapshot import IngestionFinding, IngestionSnapshot
 from speaker_attribution_video.data.versions import (
     CONNECTOR_INPUT_SCHEMA_VERSION,
@@ -152,6 +154,10 @@ class InspectRequest:
     context: RequestContext
     target: ConnectorRef
     requested_capabilities: frozenset[ConnectorCapability] = field(default_factory=frozenset)
+    rights: RightsRecord | None = None
+    sensitivity: DataSensitivity | None = None
+    declared_media_type: str | None = None
+    known_duration_us: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -159,6 +165,8 @@ class ValidateRequest:
     context: RequestContext
     target: ConnectorRef
     requested_capabilities: frozenset[ConnectorCapability] = field(default_factory=frozenset)
+    rights: RightsRecord | None = None
+    sensitivity: DataSensitivity | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,6 +174,10 @@ class IngestRequest:
     context: RequestContext
     targets: tuple[ConnectorRef, ...]
     requested_capabilities: frozenset[ConnectorCapability] = field(default_factory=frozenset)
+    rights: RightsRecord | None = None
+    sensitivity: DataSensitivity | None = None
+    declared_media_type: str | None = None
+    known_duration_us: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

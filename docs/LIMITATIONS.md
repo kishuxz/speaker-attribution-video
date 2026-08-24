@@ -1,8 +1,8 @@
 # Limitations
 
-- **D1 implements data contracts only in this PR sequence.** There is no media decode, ffmpeg, network dataset connector, or model processing.
+- **D1 implements data contracts and hash-only local/synthetic connectors.** There is no media decode, ffmpeg, network dataset connector, or model processing.
 - Local ingestion is **not** license verification. User attestation is **not** independent verification. The policy engine is **not** legal advice.
-- Snapshots, when added, contain manifests, not media.
+- Ingestion snapshots contain manifests, not media. The local connector does not copy user files into the package or git tree.
 - Synthetic tones are **not** accuracy benchmarks.
 - Historical television research data is **not** part of this repository.
 - **T1 implements contracts and deterministic test doubles only.** There is no real audio or model processing.

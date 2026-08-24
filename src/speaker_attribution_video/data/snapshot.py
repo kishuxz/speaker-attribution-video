@@ -101,7 +101,7 @@ class SnapshotEntry:
         data: dict[str, object] = {
             "artifact_id": self.artifact_id.value,
             "content_sha256": self.content_sha256,
-            "findings": [finding.identity_dict() for finding in self.findings],
+            "finding_codes": [finding.code for finding in self.findings],
             "logical_filename": self.logical_filename,
             "state": self.state.value,
         }
@@ -111,6 +111,7 @@ class SnapshotEntry:
 
     def to_dict(self) -> dict[str, Any]:
         data = self.identity_dict()
+        data.pop("finding_codes", None)
         data["findings"] = [finding.to_dict() for finding in self.findings]
         return {k: data[k] for k in sorted(data)}
 
@@ -172,7 +173,7 @@ def snapshot_identity_payload(
             )
         ],
         "finalized": finalized,
-        "findings": [finding.identity_dict() for finding in findings],
+        "finding_codes": [finding.code for finding in findings],
         "job_id": job_id.value,
         "namespace_id": namespace_id.value,
         "schema_version": schema_version,
@@ -246,6 +247,7 @@ class IngestionSnapshot:
 
     def to_dict(self) -> dict[str, Any]:
         data = dict(self.identity_dict())
+        data.pop("finding_codes", None)
         data["created_at"] = format_utc(self.created_at)
         data["snapshot_id"] = self.snapshot_id.value
         data["entries"] = [entry.to_dict() for entry in self.entries]
