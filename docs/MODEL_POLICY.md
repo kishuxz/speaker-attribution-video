@@ -6,7 +6,9 @@ Apache-2.0 covers original source in this repository only. Model weights, tokeni
 
 ## T1 rule
 
-T1 must remain model-free. Quality gates, fake backends, and conformance suites must not download weights or call paid APIs. G1 does not invoke models. T1 does not invoke models.
+T1 must remain model-free. Quality gates, fake backends, and conformance suites must not download weights or call paid APIs. G1 does not invoke models. T1 does not invoke models. Model integration is not claimed.
+
+Vendor stubs in `integrations/protocols.py` remain unimplemented. T1 backend protocols in `speaker_attribution_video.backends` are contracts plus deterministic fakes only.
 
 ## F0/G1 rule
 

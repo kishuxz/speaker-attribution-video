@@ -4,8 +4,10 @@ on:
   push:
   pull_request:
 
+# T1 CI is Linux + Python 3.11 only. macOS is not claimed.
+
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,5 +20,68 @@ jobs:
           python -m pip install -r requirements.lock
           python -m pip install --require-hashes -r requirements-dev.lock
           python -m pip install -e .
-      - name: Verify
-        run: python scripts/verify.py
+      - name: Quality gates
+        run: python scripts/verify.py --job quality
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install locked runtime and development dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -r requirements.lock
+          python -m pip install --require-hashes -r requirements-dev.lock
+          python -m pip install -e .
+      - name: Tests, coverage, and schema drift
+        run: python scripts/verify.py --job tests
+      - name: Upload test and coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          if-no-files-found: error
+          path: |
+            coverage.xml
+            junit.xml
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install locked runtime and development dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -r requirements.lock
+          python -m pip install --require-hashes -r requirements-dev.lock
+          python -m pip install -e .
+      - name: Build, inspect, and isolated wheel install
+        run: python scripts/verify.py --job package
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          if-no-files-found: error
+          path: dist/*
+
+  security-public-tree:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install locked runtime and development dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -r requirements.lock
+          python -m pip install --require-hashes -r requirements-dev.lock
+          python -m pip install -e .
+      - name: Public-tree scan and dependency audit
+        run: python scripts/verify.py --job security-public-tree
