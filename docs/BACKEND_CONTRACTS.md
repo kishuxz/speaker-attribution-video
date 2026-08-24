@@ -23,7 +23,7 @@ Each protocol exposes identity, version, configuration fingerprint, capability d
 - Unsupported capabilities raise `BackendError` with `FailureReason.UNSUPPORTED_CAPABILITY`. They must not degrade silently.
 - `ResultState.DEGRADED` and `UNRESOLVED` are never `SUCCESS`.
 - Exceptions and telemetry must not include transcript text, raw media, tokens, or private filesystem paths.
-- Fake backends live in `speaker_attribution_video.backends.testing` and accept `artifact://synth.example/` inputs only.
+Reusable conformance suites live in `speaker_attribution_video.backends.conformance`. Future backends must call those helpers rather than copying tests. Anti-vacuity backends in `backends.testing.broken` exist only to prove the suites fail with stable finding codes.
 
 ## Result and failure taxonomies
 
