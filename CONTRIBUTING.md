@@ -29,7 +29,7 @@ Lock regeneration commands are in `requirements/README.md`. Do not hand-edit com
 
 See `docs/TESTING.md` and `docs/BACKEND_CONTRACTS.md`. Coverage is evidence of execution, not correctness. Graph/validation core must stay at or above 95% line coverage; the whole `src/` package at or above 90%. Branch coverage is enabled.
 
-CI jobs on Ubuntu / Python 3.11: `quality`, `tests`, `package`, `security-public-tree`. macOS is not claimed.
+CI jobs on Ubuntu / Python 3.11: `quality`, `tests`, `package`, `security-public-tree`. macOS is not claimed. Core CI does not require FFmpeg.
 
 Do not commit `.env`, media, weights, transcripts, training JSONL, W&B metadata, or SLURM logs.
 

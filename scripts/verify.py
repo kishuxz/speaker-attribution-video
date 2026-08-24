@@ -305,6 +305,7 @@ def clean_wheel_install(wheel: Path) -> None:
                 "import speaker_attribution_video.cli; "
                 "import speaker_attribution_video.graph; "
                 "import speaker_attribution_video.data; "
+                "import speaker_attribution_video.media; "
                 "import speaker_attribution_video.integrations; "
                 "from speaker_attribution_video import __version__; "
                 "from speaker_attribution_video.cli import main; "

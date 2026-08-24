@@ -1,6 +1,7 @@
 # Limitations
 
-- **D1 implements data contracts, hash-only local/synthetic connectors, a manifest-only snapshot store, a fail-closed policy evaluator, and G1 projection of accepted ingestions.** There is no media decode, ffmpeg, network dataset connector, or model processing.
+- **MP1 currently implements toolchain contracts and a safe subprocess runner.** FFprobe inspection, FFmpeg normalization, the canonical artifact store, and real-tool CI are not in this PR. There is no diarization, transcription, or model inference.
+- FFmpeg is externally installed and separately licensed. Apache-2.0 does not relicense FFmpeg or its codecs.
 - Local ingestion is **not** license verification. User attestation is **not** independent verification. The policy engine is **not** legal advice.
 - Ingestion snapshots contain manifests, not media. The local connector does not copy user files into the package or git tree. The snapshot store does not store raw media and has no delete operation.
 - Synthetic tones are **not** accuracy benchmarks.
@@ -20,4 +21,4 @@
 - Third-party tools (pyannote, WhisperX, Llama, ECAPA) have their own hardware, license, and quality limits and are not integrated.
 - Python **3.11** is the only supported runtime. Local Python 3.14 is an environment mismatch, not a product failure.
 - CI is Linux (Ubuntu) on Python 3.11. macOS is not a verified claim.
-- This repository is private during D1; Apache-2.0 on original source does not imply a public release.
+- This repository is private during MP1; Apache-2.0 on original source does not imply a public release.

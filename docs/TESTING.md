@@ -1,6 +1,6 @@
-# Testing (T1 + D1)
+# Testing (T1 + D1 + MP1)
 
-T1 is a **model-free** verification foundation. D1 adds contract tests for source, rights, sensitivity, media manifests, dataset catalogs, ingestion snapshots, connectors, the manifest-only snapshot store, the policy evaluator, and G1 projection of accepted ingestions. Tests use synthetic fixtures and deterministic fake backends only. Passing conformance does **not** prove model accuracy. Coverage is evidence of **execution**, not correctness. Synthetic fixtures are **not** benchmark data. Model, GPU, and integration tests have not run.
+T1 is a **model-free** verification foundation. D1 adds contract tests for ingestion. MP1A/B add unit tests for media-tool contracts and a safe subprocess runner using **stub executables**. Passing conformance does **not** prove model accuracy. Coverage is evidence of **execution**, not correctness. Synthetic fixtures are **not** benchmark data. Model and GPU tests have not run. Core CI does **not** require FFmpeg.
 
 Python **3.11** is the only supported runtime. A local 3.14 interpreter is an
 environment mismatch, not a product failure.
@@ -13,7 +13,8 @@ python3.11 scripts/verify.py
 
 Core CI markers: `unit`, `property`, `conformance`. Markers `integration`,
 `model`, `gpu`, and `slow` are reserved for later real tests; empty placeholders
-are forbidden. Skips are never counted as passes.
+are forbidden. Skips are never counted as passes. Real FFmpeg checks belong in a
+future `media-integration` job, not in core CI.
 
 ## Coverage policy (T1H)
 

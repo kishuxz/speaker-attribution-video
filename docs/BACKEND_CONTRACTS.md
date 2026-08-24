@@ -26,7 +26,8 @@ Each protocol exposes identity, version, configuration fingerprint, capability d
 - Fake backends live in `speaker_attribution_video.backends.testing` and accept `artifact://synth.example/` inputs only.
 - Reusable conformance suites live in `speaker_attribution_video.backends.conformance`. Future backends must call those helpers rather than copying tests. Anti-vacuity backends in `backends.testing.broken` exist only to prove the suites fail with stable finding codes.
 - D1 connectors use `conform_data_connector` in `speaker_attribution_video.data.conformance`. Broken D1 doubles live in `data.testing.broken`. Passing connector conformance does not prove license validity or model accuracy.
-- D1 data contracts live in `speaker_attribution_video.data`. `DataConnector` is a source-neutral protocol. Runtime connectors are `LocalFileConnector` (hash-only local files inside an allowed root) and `SyntheticFixtureConnector` (project-generated WAV bytes). There is no HTTP, S3, Hugging Face, or database connector, and no media decode.
+- D1 data contracts live in `speaker_attribution_video.data`. `DataConnector` is a source-neutral protocol. Runtime connectors are `LocalFileConnector` (hash-only local files inside an allowed root) and `SyntheticFixtureConnector` (project-generated WAV bytes). There is no HTTP, S3, Hugging Face, or database connector, and D1 connectors do not decode media.
+- MP1 media-tool contracts live in `speaker_attribution_video.media`. `MediaToolRunner` is the only approved subprocess path for `ffmpeg`/`ffprobe`. Core CI uses stub executables and does not require FFmpeg. Canonical normalization is not implemented in MP1A/B.
 
 ## Result and failure taxonomies
 

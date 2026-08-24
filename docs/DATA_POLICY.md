@@ -5,7 +5,7 @@
 - Original source is Apache-2.0.
 - **No research datasets, transcripts, media, weights, W&B metadata, or SLURM logs** may be committed.
 - Synthetic fixtures are allowed **only** under `tests/fixtures/synthetic/` and must not use real show names or copyrighted dialogue.
-- The repository is **private** during D1. Publication does not license third-party data.
+- The repository is **private** during MP1. Publication does not license third-party data.
 
 ## Graph payloads
 
@@ -37,4 +37,8 @@ A separate private repository holds prior research assets. **Do not copy** those
 
 ## Retention
 
-Do not store production media in git. Local caches belong in directories named by environment variables (see `.env.example`) and remain untracked.
+Do not store production media in git. Local caches belong in directories named by environment variables (see `.env.example`) and remain untracked. Raw media is not logged. MP1 must not put paths, filenames, or bytes in default errors.
+
+## Media processing (MP1)
+
+Accepted D1 manifests may later be inspected and normalized. MP1A/B define toolchain contracts and the safe runner only. See `docs/MEDIA_PROCESSING.md` and `docs/FFMPEG.md`.
