@@ -1,0 +1,13 @@
+"""Schema version constants for the G1 evidence graph."""
+
+from __future__ import annotations
+
+ID_SCHEMA_VERSION = "g1.id.v1"
+NODE_SCHEMA_VERSION = "g1.node.v1"
+EDGE_SCHEMA_VERSION = "g1.edge.v1"
+GRAPH_SCHEMA_VERSION = "g1.graph.v1"
+
+SUPPORTED_ID_SCHEMA_VERSIONS = frozenset({ID_SCHEMA_VERSION})
+SUPPORTED_NODE_SCHEMA_VERSIONS = frozenset({NODE_SCHEMA_VERSION})
+SUPPORTED_EDGE_SCHEMA_VERSIONS = frozenset({EDGE_SCHEMA_VERSION})
+SUPPORTED_GRAPH_SCHEMA_VERSIONS = frozenset({GRAPH_SCHEMA_VERSION})
