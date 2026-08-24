@@ -6,9 +6,9 @@
 - Preserve **unresolved** rates; do not hide them inside accuracy.
 - Do not cite unsupported historical notebook numbers from prior private research.
 
-## F0
+## G1
 
-No evaluation harness yet. Smoke tests cover import and CLI only.
+No evaluation harness. Tests cover graph contracts and synthetic fixtures only. They are not model-integration tests and not accuracy benchmarks.
 
 ## Later
 

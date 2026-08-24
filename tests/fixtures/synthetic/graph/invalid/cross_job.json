@@ -1,0 +1,306 @@
+{
+  "created_at": "2026-08-24T19:00:00.000000Z",
+  "edges": [
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "edge_type": "EXTRACTED_FROM",
+      "id": "g1.id.v1/edge/09f8f679dd41ad39edcb77bbbe67cc4efaa9324e4ffcd9c9b3831e7838f391bd",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.edge.v1",
+      "sensitivity": "internal",
+      "source_id": "g1.id.v1/node/ea89f6b5da645dedbad2ca5ee2ce3ed28ebbd6a616fb183f55d68361e1b88162",
+      "target_id": "g1.id.v1/node/5a5edd519990e8d8b3366ae1fbddf304a3d30c3905f134baa43aaefb9c47ab63"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "edge_type": "ASSIGNED_TO",
+      "id": "g1.id.v1/edge/19acc2216acccaa5f9b2e470af7823c47c39590446917f7980b1fa403a444976",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.edge.v1",
+      "sensitivity": "internal",
+      "source_id": "g1.id.v1/node/42b703fa6f7ac3af2c902bcc5cb7d92d9bb7c80661e98f8314f19b5151cf5c17",
+      "target_id": "g1.id.v1/node/9b52bfa589b5b8170734fce928746dd0370198ec4bd49b068dbc6233a428b909"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "edge_type": "DIARIZED_AS",
+      "id": "g1.id.v1/edge/3d6e82df478dc3e1b6326afea970559c1c49a33a292dc1f57b7c503223f81c0f",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.edge.v1",
+      "sensitivity": "internal",
+      "source_id": "g1.id.v1/node/42b703fa6f7ac3af2c902bcc5cb7d92d9bb7c80661e98f8314f19b5151cf5c17",
+      "target_id": "g1.id.v1/node/ea89f6b5da645dedbad2ca5ee2ce3ed28ebbd6a616fb183f55d68361e1b88162"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "edge_type": "CANDIDATE_FOR",
+      "id": "g1.id.v1/edge/555304a7f0978d23acae8275658795ada447cf67b5c1623b16dea2b7cbb24961",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.edge.v1",
+      "sensitivity": "internal",
+      "source_id": "g1.id.v1/node/3ee6bb41343c1b8a004727f149fa7f883fe2b7f8a078df5ba1229f9832ec91dc",
+      "target_id": "g1.id.v1/node/9b52bfa589b5b8170734fce928746dd0370198ec4bd49b068dbc6233a428b909"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "edge_type": "PRODUCED_BY",
+      "id": "g1.id.v1/edge/5fccade11fa2eb8a3980657029cfb04db66cfc9fe1e3c9fdb2b499a49fb6ed18",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.edge.v1",
+      "sensitivity": "internal",
+      "source_id": "g1.id.v1/node/ea89f6b5da645dedbad2ca5ee2ce3ed28ebbd6a616fb183f55d68361e1b88162",
+      "target_id": "g1.id.v1/node/a1eaf43124cc67833a7f0f377e8e2b5df20359d9c4399a4e869426056a8e6ded"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "edge_type": "SUPPORTS",
+      "id": "g1.id.v1/edge/64b56a15a8de825ea6b42adc17bd537dc69c8edc05a4f2628890f5cc07d16a91",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.edge.v1",
+      "sensitivity": "internal",
+      "source_id": "g1.id.v1/node/7eb7adf1cd21fb6f48e9bc58e03f0ed58c0c46f9c4523bb0bf4ac6c0677b0860",
+      "target_id": "g1.id.v1/node/0ad6243317cdb8f4b6985cdce4de7c5e3d98f683a433252fcbd0be01cd3223ef"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "edge_type": "DERIVED_FROM",
+      "id": "g1.id.v1/edge/bea0167356ffc8ee72c9fa266571b2994dd4699ba78db5b40c09b7778a68d479",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.edge.v1",
+      "sensitivity": "internal",
+      "source_id": "g1.id.v1/node/0ad6243317cdb8f4b6985cdce4de7c5e3d98f683a433252fcbd0be01cd3223ef",
+      "target_id": "g1.id.v1/node/9b52bfa589b5b8170734fce928746dd0370198ec4bd49b068dbc6233a428b909"
+    }
+  ],
+  "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+  "max_correction_attempts": 1,
+  "metadata": {
+    "fixture": "synthetic"
+  },
+  "namespace_id": "g1.id.v1/namespace/synth.example",
+  "nodes": [
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/0ad6243317cdb8f4b6985cdce4de7c5e3d98f683a433252fcbd0be01cd3223ef",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "AttributionDecision",
+      "payload": {
+        "confidence_bp": 9000,
+        "reason_code": "ok",
+        "selected_candidate_id": "g1.id.v1/node/3ee6bb41343c1b8a004727f149fa7f883fe2b7f8a078df5ba1229f9832ec91dc",
+        "state": "ATTRIBUTED",
+        "subject_id": "g1.id.v1/node/9b52bfa589b5b8170734fce928746dd0370198ec4bd49b068dbc6233a428b909"
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/3ee6bb41343c1b8a004727f149fa7f883fe2b7f8a078df5ba1229f9832ec91dc",
+      "job_id": "g1.id.v1/job/9713af55de9fd44f3b7c44a0d48d0d6ce72d54ec4b1cdd22126b0c96bac8a19b",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "CandidateIdentity",
+      "payload": {
+        "candidate_key": "candidate_a",
+        "display_label": "speaker_a"
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/42b703fa6f7ac3af2c902bcc5cb7d92d9bb7c80661e98f8314f19b5151cf5c17",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "DiarizationTurn",
+      "payload": {
+        "cluster_key": "speaker_00",
+        "confidence_bp": 9000,
+        "span": {
+          "end_us": 1500000,
+          "start_us": 0
+        }
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/5a5edd519990e8d8b3366ae1fbddf304a3d30c3905f134baa43aaefb9c47ab63",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "MediaArtifact",
+      "payload": {
+        "content_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "display_name": "synthetic-audio-01",
+        "duration_us": 3000000,
+        "media_id": "g1.id.v1/media/9fd48c31ea4475114ebc933c3b08a596b1df1ac7d12ff8ad6440556cd115c480",
+        "mime_type": "audio/wav",
+        "uri": "artifact://synth.example/media/primary"
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/7eb7adf1cd21fb6f48e9bc58e03f0ed58c0c46f9c4523bb0bf4ac6c0677b0860",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "AudioEvidence",
+      "payload": {
+        "score_bp": 9000,
+        "summary": "cluster_support"
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/9b52bfa589b5b8170734fce928746dd0370198ec4bd49b068dbc6233a428b909",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "SpeakerCluster",
+      "payload": {
+        "cluster_key": "speaker_00",
+        "display_label": "speaker_a"
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/a1eaf43124cc67833a7f0f377e8e2b5df20359d9c4399a4e869426056a8e6ded",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "ProcessingStep",
+      "payload": {
+        "sequence_index": 0,
+        "step_name": "ingest"
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    },
+    {
+      "created_at": "2026-08-24T19:00:00.000000Z",
+      "id": "g1.id.v1/node/ea89f6b5da645dedbad2ca5ee2ce3ed28ebbd6a616fb183f55d68361e1b88162",
+      "job_id": "g1.id.v1/job/2d84ecbcd0dc43739ee49da107d7a65547683fbc0749c7177ad11e497bc7e4d4",
+      "metadata": {},
+      "namespace_id": "g1.id.v1/namespace/synth.example",
+      "node_type": "AudioArtifact",
+      "payload": {
+        "channels": 1,
+        "content_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "display_name": "synthetic-track-01",
+        "duration_us": 3000000,
+        "mime_type": "audio/wav",
+        "sample_rate_hz": 16000,
+        "uri": "artifact://synth.example/audio/track"
+      },
+      "producer": {
+        "kind": "test",
+        "name": "fixture.builder"
+      },
+      "provenance_refs": [],
+      "schema_version": "g1.node.v1",
+      "sensitivity": "internal"
+    }
+  ],
+  "producer": {
+    "kind": "test",
+    "name": "fixture.builder"
+  },
+  "schema_version": "g1.graph.v1",
+  "sensitivity": "internal"
+}

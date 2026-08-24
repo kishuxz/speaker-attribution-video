@@ -18,5 +18,14 @@ jobs:
         run: python scripts/check_public_tree.py
       - name: Compile
         run: python -m compileall -q src tests scripts
-      - name: Smoke tests
-        run: python -m pytest
+      - name: Schema drift
+        run: python -c "from speaker_attribution_video.graph.serialize import assert_schema_drift_free; assert_schema_drift_free()"
+      - name: Tests
+        run: python -m pytest -q
+      - name: Build wheel
+        run: python -m pip wheel --no-deps -w dist .
+      - name: Install wheel in empty venv
+        run: |
+          python -m venv /tmp/wheelenv
+          /tmp/wheelenv/bin/pip install dist/*.whl
+          /tmp/wheelenv/bin/python -c "from speaker_attribution_video.graph import GRAPH_SCHEMA_VERSION; from speaker_attribution_video import __version__; print(__version__, GRAPH_SCHEMA_VERSION)"

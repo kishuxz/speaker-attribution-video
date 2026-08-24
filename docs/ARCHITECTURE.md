@@ -1,35 +1,30 @@
 # Architecture
 
-F0 defined the intended shape. **G1 implements typed evidence-graph contracts only** (identifiers and nodes in this change). Runtime diarization, transcription, and agents are not implemented.
+**G1 implements the evidence graph contracts in the center of this diagram.** Surrounding boxes are planned and are not executable in this repository yet.
 
 ```
-media (caller-supplied, not in git)
-        │
-        ▼
-┌───────────────────┐
-│  Deterministic    │  diarization + transcription/alignment
-│  signal layer     │  (pyannote, Whisper/WhisperX — adapters later)
-└─────────┬─────────┘
-          │ SPEAKER_N turns + text (+ optional video features)
-          ▼
-┌───────────────────┐
-│  Evidence graph   │  nodes/edges for audio, text, optional face/ASD
-└─────────┬─────────┘
-          ▼
-┌───────────────────┐
-│  Bounded agents   │  attribution with validation and limited retry
-└─────────┬─────────┘
-          ▼
-   named turns, unresolved cases, evaluation + observability exports
+                    caller media (not in git)
+                              │
+                              ▼
+                 ┌────────────────────────┐
+                 │ Deterministic signals  │  planned
+                 │ diarization / ASR      │  (not G1)
+                 └───────────┬────────────┘
+                             │
+     planned video ─ ─ ─ ─ ─ ┤
+     (license review)        │
+                             ▼
+                 ┌────────────────────────┐
+                 │  Evidence graph (G1)   │  implemented
+                 │  nodes, edges, rules   │
+                 └───────────┬────────────┘
+                             │
+                 ┌───────────┴────────────┐
+                 │ Bounded agents         │  planned
+                 │ + observability        │  (not G1)
+                 └────────────────────────┘
 ```
 
-## Layers
+G1 records how a media artifact *could* become diarization, transcript, and attribution decisions. It does not run those steps. Overlapping speech is **representable** but not processed. Sensitive content is hashed, redacted, externally referenced, or explicitly classified if embedded.
 
-1. **Ingest** — caller provides paths via configuration. The project never vendors media.
-2. **Deterministic signals** — diarization and ASR/alignment. These should be replayable given the same inputs and tool versions.
-3. **Optional video signals** — active-speaker / face evidence, behind interfaces. InsightFace and LightASD stay unimplemented pending license review.
-4. **Attribution agents** — bounded LLM (or equivalent) mapping with validators. Unresolved is valid output.
-5. **Evidence graph** — structured provenance of each decision.
-6. **Evaluation / observability** — metrics only from declared protocols; no unsupported historical numbers.
-
-Python **3.11** is the only supported runtime.
+Python **3.11** is the only supported runtime. See `docs/GRAPH.md` for identifier, node, edge, and validator contracts.

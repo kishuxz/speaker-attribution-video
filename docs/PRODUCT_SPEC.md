@@ -4,6 +4,12 @@
 
 Speaker Attribution Graph is a production-shaped framework for tracing how audio, transcript and optional video evidence become speaker-attribution decisions. It separates deterministic diarization from bounded attribution agents, preserves unresolved cases, and exposes evidence graphs, evaluation and observability.
 
+## Current phase (G1)
+
+G1 contains **typed evidence and execution-graph contracts only**. There is no real diarization, transcription, or model inference. “Agent” execution has not been implemented. Graph provenance is a record of claims and links; it is **not proof** that an attribution is correct. Confidence is not correctness.
+
+Current fixtures are synthetic engineering tests, not accuracy benchmarks.
+
 ## Goals
 
 - Make attribution **inspectable**: every name assignment cites evidence nodes.
@@ -12,13 +18,14 @@ Speaker Attribution Graph is a production-shaped framework for tracing how audio
 - Bound agent retries and validation so loops cannot run unbounded.
 - Support optional video evidence without requiring it.
 
-## Non-goals (F0 and honest later)
+## Non-goals
 
-- Not a deployed production service in this repository yet.
+- Not a deployed production service.
 - Not a claim that prior private research was production-ready.
 - Not redistribution of television corpora, transcripts, or weights.
 - Not silent model download.
 - InsightFace and LightASD are out of scope until license review.
+- T1 / D1 / model integration / agents are out of scope until G1 is reviewed.
 
 ## Users
 
@@ -26,4 +33,4 @@ Researchers and engineers who need an auditable speaker-attribution pipeline for
 
 ## Repository status
 
-`kishuxz/speaker-attribution-video` is **private** during F0. Making it public is a separate decision.
+`kishuxz/speaker-attribution-video` is **private** during G1. Making it public is a separate decision.

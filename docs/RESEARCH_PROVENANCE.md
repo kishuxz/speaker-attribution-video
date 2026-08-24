@@ -32,6 +32,6 @@ Those experiments informed the product shape described in `docs/ARCHITECTURE.md`
 | Repository | Role | Visibility (this phase) |
 |---|---|---|
 | Private research tree | Historical prototype and research assets | private; not to be made public without history-remediation and legal review |
-| `kishuxz/speaker-attribution-video` | Public-project foundation | **private** during F0 |
+| `kishuxz/speaker-attribution-video` | Public-project foundation | **private** during G1 |
 
 No private material may be copied into this project.
