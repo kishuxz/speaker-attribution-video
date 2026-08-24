@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools==75.8.2", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "speaker-attribution-video"
+version = "0.1.0"
+description = "Speaker Attribution Graph: tracing audio, transcript and optional video evidence into speaker-attribution decisions."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11,<3.12"
+authors = [{ name = "Speaker Attribution Graph contributors" }]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Private :: Do Not Upload",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.5",
+    "iniconfig==2.1.0",
+    "packaging==24.2",
+    "pluggy==1.5.0",
+]
+
+[project.scripts]
+speaker-attribution-video = "speaker_attribution_video.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+speaker_attribution_video = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

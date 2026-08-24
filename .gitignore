@@ -1,0 +1,60 @@
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Media / audio / video
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wav
+*.flac
+*.rttm
+*.fdx
+
+# Weights and model dumps
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+*.ckpt
+*.wandb
+
+# Training dumps (synthetic JSONL allowed only under tests/fixtures/synthetic/)
+*.jsonl
+
+# Logs
+logs/
+wandb/
+*.slurm.log
+slurm-*.out
+
+# Python / OS
+.DS_Store
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+
+# Accidental pip stdout filenames
+/=0.10.0
+/=0.8.0
+/=2.1.0
+/=4.40.0
+
+# Private inventories
+.context/
+
+# Allowlisted synthetic fixtures
+!tests/fixtures/synthetic/
+!tests/fixtures/synthetic/**
