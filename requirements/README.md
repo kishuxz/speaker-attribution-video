@@ -26,6 +26,10 @@ CUSTOM_COMPILE_COMMAND="python3.11 -m piptools compile --generate-hashes -o requ
 `pip-tools==7.4.1` requires `pip<25` while compiling. Installing from the lock
 does not require pinning pip.
 
+`requirements/dev.in` also lists Linux-only `keyring` backends (`secretstorage`,
+`jeepney`) so a macOS compile still emits hashed pins that
+`--require-hashes` can install on Ubuntu.
+
 ## Development (`requirements-dev.lock`)
 
 Direct development pins live in `requirements/dev.in`.
