@@ -15,7 +15,8 @@ This phase answers:
 * Was ingestion complete, degraded, or rejected? (D1C)
 
 D1 does **not** determine speakers, transcribe media, download datasets,
-validate model accuracy, decode audio/video, or grant legal rights.
+validate model accuracy, decode audio/video, or grant legal rights. MP1
+media processing is a separate phase; see `docs/MEDIA_PROCESSING.md`.
 
 ## Supported sources in this repository
 

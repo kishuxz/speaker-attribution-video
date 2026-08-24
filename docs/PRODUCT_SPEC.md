@@ -4,9 +4,9 @@
 
 Speaker Attribution Graph is a production-shaped framework for tracing how audio, transcript and optional video evidence become speaker-attribution decisions. It separates deterministic diarization from bounded attribution agents, preserves unresolved cases, and exposes evidence graphs, evaluation and observability.
 
-## Current phase (D1)
+## Current phase (MP1)
 
-G1 contains typed evidence-graph contracts. T1 contains model-free verification. D1 adds source, rights, sensitivity, media-manifest, dataset, snapshot, and DataConnector contracts, local-file and synthetic fixture connectors, a manifest-only snapshot store, a fail-closed policy evaluator, and G1 projection of accepted ingestions. There is no real diarization, transcription, or model inference. “Agent” execution has not been implemented. Graph provenance is a record of claims and links; it is **not proof** that an attribution is correct. Confidence is not correctness. The policy engine is not legal advice.
+G1 contains typed evidence-graph contracts. T1 contains model-free verification. D1 adds source, rights, sensitivity, media-manifest, dataset, snapshot, and DataConnector contracts. MP1A/B add media-tool contracts and a safe FFmpeg/FFprobe runner. There is no real diarization, transcription, or model inference. “Agent” execution has not been implemented. Graph provenance is a record of claims and links; it is **not proof** that an attribution is correct. Confidence is not correctness. The policy engine is not legal advice. FFmpeg is not relicensed by this repository.
 
 Current fixtures are synthetic engineering tests, not accuracy benchmarks.
 
@@ -25,7 +25,7 @@ Current fixtures are synthetic engineering tests, not accuracy benchmarks.
 - Not redistribution of television corpora, transcripts, or weights.
 - Not silent model download.
 - InsightFace and LightASD are out of scope until license review.
-- Media processing / model integration / agents are out of scope until D1 is reviewed.
+- Media processing / diarization / model integration / agents are out of scope until MP1 is complete and reviewed.
 
 ## Users
 
@@ -33,4 +33,4 @@ Researchers and engineers who need an auditable speaker-attribution pipeline for
 
 ## Repository status
 
-`kishuxz/speaker-attribution-video` is **private** during D1. Making it public is a separate decision.
+`kishuxz/speaker-attribution-video` is **private** during MP1. Making it public is a separate decision.

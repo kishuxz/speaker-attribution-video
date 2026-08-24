@@ -9,6 +9,7 @@ component under its own terms.
 
 | Component | Role (future) | License / terms | Status in this repository |
 |---|---|---|---|
+| FFmpeg / FFprobe | Container inspection and canonical audio normalization (MP1) | Separate (LGPL/GPL depending on build; not Apache-2.0 by virtue of this repo) | External dependency; not bundled; invoked only via `MediaToolRunner` |
 | pyannote.audio (speaker diarization) | Deterministic diarization backend | Separate (not Apache-2.0 by virtue of this repo) | Interface + docs only; no weights |
 | OpenAI Whisper / WhisperX | Transcription and alignment | Separate | Interface + docs only; no weights |
 | SpeechBrain ECAPA-TDNN | Voice similarity embeddings | Separate | Interface + docs only; no weights |

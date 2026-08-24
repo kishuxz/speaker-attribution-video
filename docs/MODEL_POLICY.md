@@ -4,6 +4,11 @@
 
 Apache-2.0 covers original source in this repository only. Model weights, tokenizers, and checkpoints keep their own licenses.
 
+## MP1 tools
+
+FFmpeg/FFprobe are external media tools, not models. They must not be downloaded
+by package import or core CI. Invocations go through `MediaToolRunner` only.
+
 ## T1 rule
 
 T1 must remain model-free. Quality gates, fake backends, and conformance suites must not download weights or call paid APIs. G1 does not invoke models. T1 does not invoke models. Model integration is not claimed.

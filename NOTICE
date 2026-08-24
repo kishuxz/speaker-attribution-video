@@ -9,4 +9,5 @@ apply to third-party models, datasets, pretrained weights, research corpora,
 or the third-party projects listed in THIRD_PARTY_NOTICES.md.
 
 This repository is currently private. Publication as a public project is a
-separate decision and does not change third-party terms.
+separate decision and does not change third-party terms. Apache-2.0 does not
+relicense FFmpeg or its codecs.
