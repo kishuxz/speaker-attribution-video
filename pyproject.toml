@@ -97,7 +97,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S108"]
+"tests/**" = ["S101", "S105", "S108", "S311", "S603"]
 "scripts/**" = ["S603", "S607"]
 "src/speaker_attribution_video/backends/conformance/**" = ["S101", "TRY301"]
 "src/speaker_attribution_video/backends/testing/broken.py" = ["S101", "BLE001"]
@@ -133,5 +133,7 @@ exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",
 ]
-# Coverage is evidence of execution, not correctness. T1H raises fail-under policy.
-fail_under = 1
+# Coverage is evidence of execution, not correctness.
+# Overall src/ floor is 90% line coverage. Graph/validation core is 95%
+# (enforced by scripts/check_coverage_policy.py). Branch coverage is enabled.
+fail_under = 90

@@ -41,9 +41,10 @@ STEPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "--cov=speaker_attribution_video",
             "--cov-branch",
             "--cov-report=term-missing",
-            "--cov-fail-under=1",
+            "--cov-fail-under=90",
         ),
     ),
+    ("coverage-graph-core", ("scripts/check_coverage_policy.py",)),
     (
         "json-schema-drift",
         (

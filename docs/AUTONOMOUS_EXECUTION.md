@@ -4,7 +4,7 @@ Instructions for coding agents and humans working this repository.
 
 ## Current approved phase
 
-**T1 in progress.** T1A/T1B add verification tooling. T1C/T1D add model-neutral backend contracts and deterministic fakes only. Do not begin D1, model integration, or agent implementation until the T1 report is reviewed.
+**T1 in progress.** T1G/T1H add Hypothesis graph properties and honest coverage floors. T1 still has no real audio or model processing. Do not begin D1 until the T1 report is reviewed.
 
 ## Loop
 
