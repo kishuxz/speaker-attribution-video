@@ -1,0 +1,8 @@
+# Locked development/build dependencies for Python 3.11 CI (F0 smoke tests).
+# Runtime package dependencies: none.
+setuptools==75.8.2
+wheel==0.45.1
+iniconfig==2.1.0
+packaging==24.2
+pluggy==1.5.0
+pytest==8.3.5
