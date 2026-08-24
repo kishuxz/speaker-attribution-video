@@ -83,4 +83,8 @@ The public JSON Schema is
 `src/speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json`.
 A drift check compares Python enums to schema enums.
 
+D1 can project an accepted media manifest and snapshot into a G1 document via
+`graph_from_accepted_ingestion`. That projection still does not diarize,
+transcribe, or attribute speakers.
+
 

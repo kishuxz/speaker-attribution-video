@@ -6,7 +6,7 @@ This repository (`kishuxz/speaker-attribution-video`) holds original source unde
 
 ## Current phase (D1)
 
-T1 (model-free verification) is complete. D1 adds **safe data contracts**, **source-neutral local/synthetic connectors**, a **manifest-only snapshot store**, and a **fail-closed policy evaluator**. There is still **no** real audio processing, diarization, transcription, network dataset connector, model inference, agent execution, or public demo. Local ingestion is not license verification. The policy engine is not legal advice.
+T1 (model-free verification) is complete. D1 adds **safe data contracts**, **source-neutral local/synthetic connectors**, a **manifest-only snapshot store**, a **fail-closed policy evaluator**, and **G1 projection of accepted ingestions**. There is still **no** real audio processing, diarization, transcription, network dataset connector, model inference, agent execution, or public demo. Local ingestion is not license verification. The policy engine is not legal advice.
 
 Passing a conformance suite does **not** prove model accuracy. Coverage is evidence of execution, not correctness. Synthetic fixtures are not benchmark data. Model, GPU, and integration tests have not run.
 

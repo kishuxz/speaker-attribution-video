@@ -147,4 +147,15 @@ Unknown never defaults to allow.
 Operations: `INGEST`, `TRAIN`, `EVALUATE`, `DEMO`, `REDISTRIBUTE`,
 `EXPORT_METADATA`. Decisions: `ALLOW`, `DENY`, `REQUIRES_REVIEW`.
 
-G1 graph projection remains a later D1 node.
+## G1 projection (D1I)
+
+`graph_from_accepted_ingestion` converts an **accepted** media manifest and
+snapshot into a validated G1 document: `MediaArtifact`, optional `AudioArtifact`
+when the declared/detected type is audio, an ingest `ProcessingStep`, and
+manifest/snapshot `OutputArtifact` nodes. Namespace, job, content hashes, and
+sensitivity are preserved without downgrade. Raw media is never embedded.
+
+Rejected or partial ingestion raises and must not be serialized as complete
+success. Repeated projection with an explicit `created_at` is byte-identical.
+The builder does not create diarization turns, transcripts, speakers, or
+attribution decisions.

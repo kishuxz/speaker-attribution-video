@@ -6,7 +6,7 @@ Speaker Attribution Graph is a production-shaped framework for tracing how audio
 
 ## Current phase (D1)
 
-G1 contains typed evidence-graph contracts. T1 contains model-free verification. D1 adds source, rights, sensitivity, media-manifest, dataset, snapshot, and DataConnector contracts, local-file and synthetic fixture connectors, a manifest-only snapshot store, and a fail-closed policy evaluator. There is no real diarization, transcription, or model inference. “Agent” execution has not been implemented. Graph provenance is a record of claims and links; it is **not proof** that an attribution is correct. Confidence is not correctness. The policy engine is not legal advice.
+G1 contains typed evidence-graph contracts. T1 contains model-free verification. D1 adds source, rights, sensitivity, media-manifest, dataset, snapshot, and DataConnector contracts, local-file and synthetic fixture connectors, a manifest-only snapshot store, a fail-closed policy evaluator, and G1 projection of accepted ingestions. There is no real diarization, transcription, or model inference. “Agent” execution has not been implemented. Graph provenance is a record of claims and links; it is **not proof** that an attribution is correct. Confidence is not correctness. The policy engine is not legal advice.
 
 Current fixtures are synthetic engineering tests, not accuracy benchmarks.
 
