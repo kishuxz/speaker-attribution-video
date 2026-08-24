@@ -1,6 +1,6 @@
 # Architecture
 
-F0 defines the intended shape. Runtime implementations are not in this repository yet.
+F0 defined the intended shape. **G1 implements typed evidence-graph contracts only** (identifiers and nodes in this change). Runtime diarization, transcription, and agents are not implemented.
 
 ```
 media (caller-supplied, not in git)
