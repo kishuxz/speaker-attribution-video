@@ -12,7 +12,7 @@ No evaluation harness. Tests cover graph contracts and synthetic fixtures only. 
 
 ## D1
 
-No accuracy evaluation. Manifest and rights tests are contract checks, not license verification and not diarization/transcription benchmarks. Synthetic tones, when added, prove ingestion behavior only.
+No accuracy evaluation. Manifest and rights tests are contract checks, not license verification and not diarization/transcription benchmarks. Synthetic tones prove ingestion behavior only; they are not accuracy benchmarks.
 
 ## Later
 

@@ -15,7 +15,7 @@ The G1 graph does not require raw audio or video bytes. Transcript text is sensi
 
 Media manifests describe artifacts without embedding file bytes or absolute local paths. Unknown or missing license fields are **not** permission. User attestation is **not** independent verification. Local ingestion is **not** license verification. The application does not automate acceptance of third-party terms. A later policy engine is **not** legal advice.
 
-Only synthetic fixtures and user-supplied local files are supported as runtime sources. There is no network dataset connector. Historical television research data is not part of this repository. Research-only data cannot be emitted into public fixtures or package artifacts.
+Only synthetic fixtures and user-supplied local files are supported as runtime sources. There is no network dataset connector. Local hashing is not license verification. Historical television research data is not part of this repository. Research-only data cannot be emitted into public fixtures or package artifacts.
 
 ## Caller data
 

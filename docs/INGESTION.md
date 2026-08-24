@@ -75,6 +75,48 @@ later D1 nodes except as follows:
 * D1C defines `DatasetManifest`, `IngestionSnapshot`, and findings.
 * D1D defines the source-neutral `DataConnector` protocol. There is still **no**
   HTTP, S3, Hugging Face, or database connector, and no media decode.
+* D1E `LocalFileConnector` hashes user files inside an allowed root. It does not
+  decode media, invoke ffmpeg, copy files into the package, or treat a file
+  extension as an authoritative MIME type.
+* D1F `SyntheticFixtureConnector` generates original-project silence/tone/noise
+  WAV bytes with Python’s standard library. Those tones are not accuracy
+  benchmarks.
 
 JSON Schema: `speaker_attribution_video/data/schemas/media_manifest.d1.v1.json`,
 `dataset_manifest.d1.v1.json`, and `ingestion_snapshot.d1.v1.json`.
+
+## Local-file connector (D1E)
+
+`LocalFileConnector` requires an explicit allowed root. Requested paths must stay
+inside that root. Path traversal, absolute paths, and symlink escape are
+rejected. Devices, sockets, FIFOs, and directories are rejected when a regular
+file is required. Hard links are hashed; a warning records that path uniqueness
+is not content uniqueness.
+
+The connector may hash bytes in bounded chunks and sniff a short magic header.
+It does **not** decode audio/video, infer duration, invoke ffmpeg, or copy the
+file into the package. Container type is `declared`, `detected` from that
+header, or `unknown`. A file extension is never authoritative.
+
+Errors and manifests must not include absolute paths. Display names are safe
+logical slugs. A configurable maximum size is enforced before hashing. If the
+file changes during hashing, ingestion fails closed. Missing rights metadata is
+rejected when policy requires it.
+
+## Synthetic fixture connector (D1F)
+
+`SyntheticFixtureConnector` generates only original-project content:
+
+* silence WAV
+* 440 Hz tone WAV
+* deterministic non-speech noise WAV
+* manifest-only synthetic transcript note `speaker-alpha-synthetic-sentence-one`
+
+Every synthetic artifact declares `source_type=SYNTHETIC`, `sensitivity=SYNTHETIC`,
+an explicit project fixture license, a deterministic seed, and an expected
+SHA-256. These tones prove ingestion behavior. They are **not** diarization or
+transcription benchmarks and must not include celebrity names, television
+dialogue, cloned voices, or private audio.
+
+Snapshot storage, the policy engine, and G1 graph projection remain later D1
+nodes.

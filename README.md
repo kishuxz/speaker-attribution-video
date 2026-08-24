@@ -6,7 +6,7 @@ This repository (`kishuxz/speaker-attribution-video`) holds original source unde
 
 ## Current phase (D1)
 
-T1 (model-free verification) is complete. D1 adds **safe data contracts**: versioned source, rights, sensitivity, and immutable media manifests. There is still **no** real audio processing, diarization, transcription, network dataset connector, model inference, agent execution, or public demo. Local ingestion, when added, is not license verification.
+T1 (model-free verification) is complete. D1 adds **safe data contracts** and **source-neutral local/synthetic connectors**. `LocalFileConnector` hashes user files inside an allowed root. `SyntheticFixtureConnector` generates original-project WAV bytes. There is still **no** real audio processing, diarization, transcription, network dataset connector, model inference, agent execution, or public demo. Local ingestion is not license verification.
 
 Passing a conformance suite does **not** prove model accuracy. Coverage is evidence of execution, not correctness. Synthetic fixtures are not benchmark data. Model, GPU, and integration tests have not run.
 

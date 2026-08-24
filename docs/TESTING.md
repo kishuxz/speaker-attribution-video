@@ -1,6 +1,6 @@
 # Testing (T1 + D1)
 
-T1 is a **model-free** verification foundation. D1 adds contract tests for source, rights, sensitivity, media manifests, dataset catalogs, ingestion snapshots, and the DataConnector protocol. Tests use synthetic fixtures and deterministic fake backends only. Passing conformance does **not** prove model accuracy. Coverage is evidence of **execution**, not correctness. Synthetic fixtures are **not** benchmark data. Model, GPU, and integration tests have not run.
+T1 is a **model-free** verification foundation. D1 adds contract tests for source, rights, sensitivity, media manifests, dataset catalogs, ingestion snapshots, the DataConnector protocol, `LocalFileConnector`, and `SyntheticFixtureConnector`. Tests use synthetic fixtures and deterministic fake backends only. Passing conformance does **not** prove model accuracy. Coverage is evidence of **execution**, not correctness. Synthetic fixtures are **not** benchmark data. Model, GPU, and integration tests have not run.
 
 Python **3.11** is the only supported runtime. A local 3.14 interpreter is an
 environment mismatch, not a product failure.
