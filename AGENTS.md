@@ -16,7 +16,7 @@ This repository is the **public-project foundation** for Speaker Attribution Gra
 
 ## Package layout
 
-Original code lives under `src/speaker_attribution_video/`. Third-party vendor stubs remain in `integrations/protocols.py`. Model-neutral backend contracts land in later T1 PRs under `src/speaker_attribution_video/backends/`.
+Original code lives under `src/speaker_attribution_video/`. Third-party vendor stubs remain in `integrations/protocols.py`. Model-neutral backend contracts live under `src/speaker_attribution_video/backends/`. Deterministic fakes are test utilities in `backends/testing/`.
 
 ## Verification
 

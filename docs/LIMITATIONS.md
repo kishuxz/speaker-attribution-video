@@ -1,6 +1,6 @@
 # Limitations
 
-- **T1 is verification foundations.** T1A/T1B add tooling and quality gates only. They do not transcribe, diarize, attribute speakers, or run agents.
+- **T1C/T1D are contracts and fakes.** They do not process real audio or call models. Conformance of a fake is not model accuracy.
 - **G1 is graph contracts only.** It does not transcribe, diarize, attribute speakers, or run agents.
 - Graph provenance is **not proof**. Confidence is **not correctness**. Coverage is evidence of execution, not correctness.
 - Overlapping speech can be represented; it is not processed.
