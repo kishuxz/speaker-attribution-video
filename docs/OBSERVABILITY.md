@@ -7,9 +7,9 @@
 - Counters: turns in, turns attributed, unresolved, validator retries
 - Timing per node
 
-## F0
+## G1
 
-No runtime telemetry. CLI prints help/version only.
+No runtime telemetry. CLI prints help/version only. Graph documents can be serialized to JSON for later observability phases.
 
 ## Forbidden in logs and CI
 
