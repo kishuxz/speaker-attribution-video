@@ -159,3 +159,11 @@ Rejected or partial ingestion raises and must not be serialized as complete
 success. Repeated projection with an explicit `created_at` is byte-identical.
 The builder does not create diarization turns, transcripts, speakers, or
 attribution decisions.
+
+## Conformance (D1J/D1K)
+
+`conform_data_connector` is the reusable suite for future connectors. Honest
+local and synthetic connectors must pass it. Broken doubles in
+`data.testing.broken` exist only to prove the suite fails with stable finding
+codes. Passing conformance is not license verification and not an accuracy
+benchmark.

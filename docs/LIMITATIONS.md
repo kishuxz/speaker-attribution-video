@@ -1,6 +1,6 @@
 # Limitations
 
-- **D1 implements data contracts and hash-only local/synthetic connectors.** There is no media decode, ffmpeg, network dataset connector, or model processing.
+- **D1 implements data contracts, hash-only local/synthetic connectors, a manifest-only snapshot store, a fail-closed policy evaluator, and G1 projection of accepted ingestions.** There is no media decode, ffmpeg, network dataset connector, or model processing.
 - Local ingestion is **not** license verification. User attestation is **not** independent verification. The policy engine is **not** legal advice.
 - Ingestion snapshots contain manifests, not media. The local connector does not copy user files into the package or git tree. The snapshot store does not store raw media and has no delete operation.
 - Synthetic tones are **not** accuracy benchmarks.
