@@ -12,8 +12,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="speaker-attribution-video",
         description=(
-            "Speaker Attribution Graph — foundation only. "
-            "No inference, no model download."
+            "Speaker Attribution Graph — foundation only. No inference, no model download."
         ),
     )
     parser.add_argument("--version", action="store_true", help="print package version")

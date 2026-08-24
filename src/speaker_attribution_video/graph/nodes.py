@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Mapping, Union
+from typing import Any, TypeAlias
 
 from speaker_attribution_video.graph.enums import (
     DecisionState,
@@ -32,9 +33,22 @@ from speaker_attribution_video.graph.ids import (
 )
 from speaker_attribution_video.graph.jsonutil import JsonObject, as_json_object
 from speaker_attribution_video.graph.producer import Producer
-from speaker_attribution_video.graph.text import SensitiveText, require_display_name, require_logical_uri
-from speaker_attribution_video.graph.time import TimeSpan, format_utc, parse_utc, require_nonneg_int, require_utc
-from speaker_attribution_video.graph.versions import NODE_SCHEMA_VERSION, SUPPORTED_NODE_SCHEMA_VERSIONS
+from speaker_attribution_video.graph.text import (
+    SensitiveText,
+    require_display_name,
+    require_logical_uri,
+)
+from speaker_attribution_video.graph.time import (
+    TimeSpan,
+    format_utc,
+    parse_utc,
+    require_nonneg_int,
+    require_utc,
+)
+from speaker_attribution_video.graph.versions import (
+    NODE_SCHEMA_VERSION,
+    SUPPORTED_NODE_SCHEMA_VERSIONS,
+)
 
 
 def require_confidence_bp(value: object, *, required: bool = False) -> int | None:
@@ -244,7 +258,11 @@ class VisualEvidence:
     span: TimeSpan | None = None
 
     def __post_init__(self) -> None:
-        if self.summary not in (EvidenceSummary.FACE_COPRESENCE, EvidenceSummary.ACTIVE_SPEAKER, EvidenceSummary.OTHER):
+        if self.summary not in (
+            EvidenceSummary.FACE_COPRESENCE,
+            EvidenceSummary.ACTIVE_SPEAKER,
+            EvidenceSummary.OTHER,
+        ):
             raise GraphContractError("evidence.summary", "visual evidence summary is invalid")
         require_confidence_bp(self.score_bp)
 
@@ -280,15 +298,23 @@ class AttributionDecision:
         if not isinstance(self.reason_code, ReasonCode):
             raise GraphContractError("decision.reason", "reason code is invalid")
         require_confidence_bp(self.confidence_bp)
-        if self.review_reason_code is not None and not isinstance(self.review_reason_code, ReasonCode):
+        if self.review_reason_code is not None and not isinstance(
+            self.review_reason_code, ReasonCode
+        ):
             raise GraphContractError("decision.review_reason", "review reason code is invalid")
         # Per-node structural checks; graph admission is G1D/G1F.
         if self.state is DecisionState.ATTRIBUTED and self.selected_candidate_id is None:
-            raise GraphContractError("decision.attributed", "ATTRIBUTED requires exactly one selected candidate")
+            raise GraphContractError(
+                "decision.attributed", "ATTRIBUTED requires exactly one selected candidate"
+            )
         if self.state is DecisionState.UNRESOLVED and self.selected_candidate_id is not None:
-            raise GraphContractError("decision.unresolved", "UNRESOLVED must not contain a selected identity")
+            raise GraphContractError(
+                "decision.unresolved", "UNRESOLVED must not contain a selected identity"
+            )
         if self.state is DecisionState.REQUIRES_REVIEW and self.review_reason_code is None:
-            raise GraphContractError("decision.review", "REQUIRES_REVIEW must identify a review reason")
+            raise GraphContractError(
+                "decision.review", "REQUIRES_REVIEW must identify a review reason"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -306,9 +332,13 @@ class ValidationFinding:
         if not isinstance(self.repair_category, RepairCategory):
             raise GraphContractError("finding.repair", "repair category is invalid")
         if not isinstance(self.message, str) or not self.message or len(self.message) > 256:
-            raise GraphContractError("finding.message", "finding message must be a short redacted string")
+            raise GraphContractError(
+                "finding.message", "finding message must be a short redacted string"
+            )
         if any(ch in self.message for ch in "\n\r\t"):
-            raise GraphContractError("finding.message", "finding message must be a short redacted string")
+            raise GraphContractError(
+                "finding.message", "finding message must be a short redacted string"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -339,33 +369,56 @@ class HumanReviewDecision:
         if not isinstance(self.outcome, ReviewOutcome):
             raise GraphContractError("review.outcome", "review outcome is invalid")
         if self.outcome is ReviewOutcome.OVERRIDE and self.replacement_decision_id is None:
-            raise GraphContractError("review.override", "override must retain a replacement decision reference")
+            raise GraphContractError(
+                "review.override", "override must retain a replacement decision reference"
+            )
         if self.note_ref is not None:
             require_logical_uri(self.note_ref, label="note_ref")
 
 
-Payload = Union[
-    MediaArtifact,
-    AudioArtifact,
-    ProcessingStep,
-    ModelInvocation,
-    OutputArtifact,
-    AudioSegment,
-    DiarizationTurn,
-    TranscriptUtterance,
-    TranscriptToken,
-    SpeakerCluster,
-    CandidateIdentity,
-    AudioEvidence,
-    VisualEvidence,
-    DialogueEvidence,
-    AttributionDecision,
-    ValidationFinding,
-    CorrectionAttempt,
-    HumanReviewDecision,
-]
+Payload: TypeAlias = (
+    MediaArtifact
+    | AudioArtifact
+    | ProcessingStep
+    | ModelInvocation
+    | OutputArtifact
+    | AudioSegment
+    | DiarizationTurn
+    | TranscriptUtterance
+    | TranscriptToken
+    | SpeakerCluster
+    | CandidateIdentity
+    | AudioEvidence
+    | VisualEvidence
+    | DialogueEvidence
+    | AttributionDecision
+    | ValidationFinding
+    | CorrectionAttempt
+    | HumanReviewDecision
+)
 
-_PAYLOAD_TYPE: dict[NodeType, type[Payload]] = {
+PayloadClass: TypeAlias = (
+    type[MediaArtifact]
+    | type[AudioArtifact]
+    | type[ProcessingStep]
+    | type[ModelInvocation]
+    | type[OutputArtifact]
+    | type[AudioSegment]
+    | type[DiarizationTurn]
+    | type[TranscriptUtterance]
+    | type[TranscriptToken]
+    | type[SpeakerCluster]
+    | type[CandidateIdentity]
+    | type[AudioEvidence]
+    | type[VisualEvidence]
+    | type[DialogueEvidence]
+    | type[AttributionDecision]
+    | type[ValidationFinding]
+    | type[CorrectionAttempt]
+    | type[HumanReviewDecision]
+)
+
+_PAYLOAD_TYPE: dict[NodeType, PayloadClass] = {
     NodeType.MEDIA_ARTIFACT: MediaArtifact,
     NodeType.AUDIO_ARTIFACT: AudioArtifact,
     NodeType.PROCESSING_STEP: ProcessingStep,
@@ -437,7 +490,7 @@ class GraphNode:
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> GraphNode:
         node_type = parse_enum(NodeType, data.get("node_type"), code="node.type")
-        payload_cls = _PAYLOAD_TYPE[node_type]  # type: ignore[index]
+        payload_cls = _PAYLOAD_TYPE[node_type]
         payload = _payload_from_dict(payload_cls, data.get("payload"))
         created = data.get("created_at")
         if not isinstance(created, str):
@@ -447,14 +500,14 @@ class GraphNode:
             raise GraphContractError("node.provenance", "provenance refs are invalid")
         return cls(
             id=NodeId(str(data.get("id"))),
-            node_type=node_type,  # type: ignore[arg-type]
+            node_type=node_type,
             schema_version=str(data.get("schema_version")),
             namespace_id=NamespaceId(str(data.get("namespace_id"))),
             job_id=JobId(str(data.get("job_id"))),
             created_at=parse_utc(created),
             producer=Producer.from_dict(_as_map(data.get("producer"))),
             metadata=as_json_object(_as_map(data.get("metadata") or {})),
-            sensitivity=parse_enum(Sensitivity, data.get("sensitivity"), code="node.sensitivity"),  # type: ignore[arg-type]
+            sensitivity=parse_enum(Sensitivity, data.get("sensitivity"), code="node.sensitivity"),
             provenance_refs=tuple(refs),
             payload=payload,
         )
@@ -545,7 +598,9 @@ def _payload_to_dict(payload: Payload) -> dict[str, Any]:
                 "display_name": payload.display_name,
                 "duration_us": payload.duration_us,
                 "mime_type": payload.mime_type,
-                "parent_media_id": payload.parent_media_id.value if payload.parent_media_id else None,
+                "parent_media_id": payload.parent_media_id.value
+                if payload.parent_media_id
+                else None,
                 "sample_rate_hz": payload.sample_rate_hz,
                 "uri": payload.uri,
             }
@@ -612,7 +667,9 @@ def _payload_to_dict(payload: Payload) -> dict[str, Any]:
             }
         )
     if isinstance(payload, SpeakerCluster):
-        return _omit_none({"cluster_key": payload.cluster_key, "display_label": payload.display_label})
+        return _omit_none(
+            {"cluster_key": payload.cluster_key, "display_label": payload.display_label}
+        )
     if isinstance(payload, CandidateIdentity):
         return {"candidate_key": payload.candidate_key, "display_label": payload.display_label}
     if isinstance(payload, AudioEvidence):
@@ -644,8 +701,12 @@ def _payload_to_dict(payload: Payload) -> dict[str, Any]:
             {
                 "confidence_bp": payload.confidence_bp,
                 "reason_code": payload.reason_code.value,
-                "review_reason_code": payload.review_reason_code.value if payload.review_reason_code else None,
-                "selected_candidate_id": payload.selected_candidate_id.value if payload.selected_candidate_id else None,
+                "review_reason_code": payload.review_reason_code.value
+                if payload.review_reason_code
+                else None,
+                "selected_candidate_id": payload.selected_candidate_id.value
+                if payload.selected_candidate_id
+                else None,
                 "state": payload.state.value,
                 "subject_id": payload.subject_id.value,
             }
@@ -664,7 +725,9 @@ def _payload_to_dict(payload: Payload) -> dict[str, Any]:
                 "attempt_number": payload.attempt_number,
                 "finding_id": payload.finding_id.value,
                 "reason_code": payload.reason_code.value,
-                "resulting_decision_id": payload.resulting_decision_id.value if payload.resulting_decision_id else None,
+                "resulting_decision_id": payload.resulting_decision_id.value
+                if payload.resulting_decision_id
+                else None,
                 "target_decision_id": payload.target_decision_id.value,
             }
         )
@@ -683,9 +746,9 @@ def _payload_to_dict(payload: Payload) -> dict[str, Any]:
     raise GraphContractError("node.payload", "unsupported payload")
 
 
-def _payload_from_dict(cls: type[Payload], data: object) -> Payload:
+def _payload_from_dict(cls: PayloadClass, data: object) -> Payload:
     mapping = _as_map(data)
-    builder: dict[type[Payload], Callable[[Mapping[str, object]], Payload]] = {
+    builder: dict[PayloadClass, Callable[[Mapping[str, object]], Payload]] = {
         MediaArtifact: lambda d: MediaArtifact(
             content_hash=str(d["content_hash"]),
             mime_type=str(d["mime_type"]),
@@ -704,16 +767,20 @@ def _payload_from_dict(cls: type[Payload], data: object) -> Payload:
             sample_rate_hz=_opt_int(d.get("sample_rate_hz")),
             channels=_opt_int(d.get("channels")),
             mime_type=_opt_str(d.get("mime_type")),
-            parent_media_id=MediaId(str(d["parent_media_id"])) if d.get("parent_media_id") else None,
+            parent_media_id=MediaId(str(d["parent_media_id"]))
+            if d.get("parent_media_id")
+            else None,
         ),
         ProcessingStep: lambda d: ProcessingStep(
             step_name=str(d["step_name"]),
             sequence_index=require_int(d["sequence_index"], label="sequence_index"),
-            parameters=as_json_object(_as_map(d["parameters"])) if d.get("parameters") is not None else None,
+            parameters=as_json_object(_as_map(d["parameters"]))
+            if d.get("parameters") is not None
+            else None,
         ),
         ModelInvocation: lambda d: ModelInvocation(
             invocation_id=ModelInvocationId(str(d["invocation_id"])),
-            role=parse_enum(ModelRole, d.get("role"), code="model.role"),  # type: ignore[arg-type]
+            role=parse_enum(ModelRole, d.get("role"), code="model.role"),
             parameter_digest=str(d["parameter_digest"]),
             logical_name=_opt_str(d.get("logical_name")),
         ),
@@ -755,49 +822,59 @@ def _payload_from_dict(cls: type[Payload], data: object) -> Payload:
             display_label=str(d["display_label"]),
         ),
         AudioEvidence: lambda d: AudioEvidence(
-            summary=parse_enum(EvidenceSummary, d.get("summary"), code="evidence.summary"),  # type: ignore[arg-type]
+            summary=parse_enum(EvidenceSummary, d.get("summary"), code="evidence.summary"),
             score_bp=_opt_int(d.get("score_bp")),
             span=TimeSpan.from_dict(_as_map(d["span"])) if d.get("span") else None,
         ),
         VisualEvidence: lambda d: VisualEvidence(
-            summary=parse_enum(EvidenceSummary, d.get("summary"), code="evidence.summary"),  # type: ignore[arg-type]
+            summary=parse_enum(EvidenceSummary, d.get("summary"), code="evidence.summary"),
             score_bp=_opt_int(d.get("score_bp")),
             span=TimeSpan.from_dict(_as_map(d["span"])) if d.get("span") else None,
         ),
         DialogueEvidence: lambda d: DialogueEvidence(
-            kind=parse_enum(DialogueKind, d.get("kind"), code="dialogue.kind"),  # type: ignore[arg-type]
+            kind=parse_enum(DialogueKind, d.get("kind"), code="dialogue.kind"),
             span=TimeSpan.from_dict(_as_map(d["span"])) if d.get("span") else None,
             text=SensitiveText.from_dict(_as_map(d["text"])) if d.get("text") else None,
         ),
         AttributionDecision: lambda d: AttributionDecision(
-            state=parse_enum(DecisionState, d.get("state"), code="decision.state"),  # type: ignore[arg-type]
+            state=parse_enum(DecisionState, d.get("state"), code="decision.state"),
             subject_id=_nid(d.get("subject_id")),
-            reason_code=parse_enum(ReasonCode, d.get("reason_code"), code="decision.reason"),  # type: ignore[arg-type]
-            selected_candidate_id=_nid(d["selected_candidate_id"]) if d.get("selected_candidate_id") else None,
+            reason_code=parse_enum(ReasonCode, d.get("reason_code"), code="decision.reason"),
+            selected_candidate_id=_nid(d["selected_candidate_id"])
+            if d.get("selected_candidate_id")
+            else None,
             confidence_bp=_opt_int(d.get("confidence_bp")),
-            review_reason_code=parse_enum(ReasonCode, d.get("review_reason_code"), code="decision.review_reason")
-            if d.get("review_reason_code")
-            else None,  # type: ignore[arg-type]
+            review_reason_code=(
+                parse_enum(ReasonCode, d.get("review_reason_code"), code="decision.review_reason")
+                if d.get("review_reason_code") is not None
+                else None
+            ),
         ),
         ValidationFinding: lambda d: ValidationFinding(
             code=str(d["code"]),
-            severity=parse_enum(FindingSeverity, d.get("severity"), code="finding.severity"),  # type: ignore[arg-type]
+            severity=parse_enum(FindingSeverity, d.get("severity"), code="finding.severity"),
             subject_id=_nid(d.get("subject_id")),
-            repair_category=parse_enum(RepairCategory, d.get("repair_category"), code="finding.repair"),  # type: ignore[arg-type]
+            repair_category=parse_enum(
+                RepairCategory, d.get("repair_category"), code="finding.repair"
+            ),
             message=str(d["message"]),
         ),
         CorrectionAttempt: lambda d: CorrectionAttempt(
             attempt_number=require_int(d["attempt_number"], label="attempt_number"),
             finding_id=_nid(d.get("finding_id")),
             target_decision_id=_nid(d.get("target_decision_id")),
-            reason_code=parse_enum(ReasonCode, d.get("reason_code"), code="correction.reason"),  # type: ignore[arg-type]
-            resulting_decision_id=_nid(d["resulting_decision_id"]) if d.get("resulting_decision_id") else None,
+            reason_code=parse_enum(ReasonCode, d.get("reason_code"), code="correction.reason"),
+            resulting_decision_id=_nid(d["resulting_decision_id"])
+            if d.get("resulting_decision_id")
+            else None,
         ),
         HumanReviewDecision: lambda d: HumanReviewDecision(
             reviewer_id=ReviewerId(str(d["reviewer_id"])),
             target_decision_id=_nid(d.get("target_decision_id")),
-            outcome=parse_enum(ReviewOutcome, d.get("outcome"), code="review.outcome"),  # type: ignore[arg-type]
-            replacement_decision_id=_nid(d["replacement_decision_id"]) if d.get("replacement_decision_id") else None,
+            outcome=parse_enum(ReviewOutcome, d.get("outcome"), code="review.outcome"),
+            replacement_decision_id=_nid(d["replacement_decision_id"])
+            if d.get("replacement_decision_id")
+            else None,
             note_ref=_opt_str(d.get("note_ref")),
         ),
     }

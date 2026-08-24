@@ -4,14 +4,17 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Mapping
 
 from speaker_attribution_video.graph.document import EvidenceGraphDocument
 from speaker_attribution_video.graph.edges import EdgeType
 from speaker_attribution_video.graph.enums import DecisionState, NodeType
 from speaker_attribution_video.graph.errors import GraphContractError
 from speaker_attribution_video.graph.jsonutil import canonical_dumps, require_json_object
-from speaker_attribution_video.graph.validate import GraphValidationError, load_graph, validate_graph
+from speaker_attribution_video.graph.validate import (
+    GraphValidationError,
+    load_graph,
+    validate_graph,
+)
 from speaker_attribution_video.graph.versions import GRAPH_SCHEMA_VERSION
 
 SCHEMA_PATH = Path(__file__).resolve().parent / "schemas" / "evidence_graph.g1.v1.json"
@@ -44,7 +47,15 @@ def loads_document(text: str) -> EvidenceGraphDocument:
 
 
 def load_json_schema() -> dict[str, object]:
-    return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    loaded: object = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise GraphContractError("schema.json", "JSON Schema must be an object")
+    schema: dict[str, object] = {}
+    for key, value in loaded.items():
+        if not isinstance(key, str):
+            raise GraphContractError("schema.json", "JSON Schema keys must be strings")
+        schema[key] = value
+    return schema
 
 
 def python_enums_for_schema() -> dict[str, object]:

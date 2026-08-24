@@ -4,9 +4,13 @@
 
 Apache-2.0 covers original source in this repository only. Model weights, tokenizers, and checkpoints keep their own licenses.
 
-## F0 rule
+## T1 rule
 
-This repository **must not** download or bundle weights. There is no silent `from_pretrained` on import. CI must not require hub credentials. G1 does not invoke models.
+T1 must remain model-free. Quality gates, fake backends, and conformance suites must not download weights or call paid APIs. G1 does not invoke models. T1 does not invoke models.
+
+## F0/G1 rule
+
+This repository **must not** download or bundle weights. There is no silent `from_pretrained` on import. CI must not require hub credentials.
 
 ## Intended backends (not implemented in F0)
 

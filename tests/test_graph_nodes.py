@@ -1,15 +1,21 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
-from speaker_attribution_video.graph.enums import ProducerKind, Sensitivity, TextMode
+from speaker_attribution_video.graph.enums import (
+    DecisionState,
+    ProducerKind,
+    ReasonCode,
+    Sensitivity,
+    TextMode,
+)
 from speaker_attribution_video.graph.errors import GraphContractError
-from speaker_attribution_video.graph.ids import JobId, NamespaceId, NodeId
+from speaker_attribution_video.graph.ids import JobId, MediaId, NamespaceId, NodeId
 from speaker_attribution_video.graph.nodes import (
-    AudioArtifact,
     AttributionDecision,
+    AudioArtifact,
     CandidateIdentity,
     DiarizationTurn,
     GraphNode,
@@ -20,14 +26,12 @@ from speaker_attribution_video.graph.nodes import (
     TranscriptUtterance,
     make_node,
 )
-from speaker_attribution_video.graph.ids import MediaId
-from speaker_attribution_video.graph.enums import DecisionState, ReasonCode
 from speaker_attribution_video.graph.producer import Producer
 from speaker_attribution_video.graph.text import SensitiveText
 from speaker_attribution_video.graph.time import TimeSpan
 from speaker_attribution_video.graph.versions import ID_SCHEMA_VERSION, NODE_SCHEMA_VERSION
 
-FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=timezone.utc)
+FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=UTC)
 HASH = "a" * 64
 NS = NamespaceId.from_slug("synth.example")
 JOB = JobId.derive(NS, "job01")
@@ -197,7 +201,9 @@ def test_token_identity_uses_utterance_id_not_raw_text() -> None:
         job=JOB,
         payload=TranscriptUtterance(
             span=TimeSpan(0, 200_000),
-            text=SensitiveText(mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"),
+            text=SensitiveText(
+                mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"
+            ),
         ),
         producer=PRODUCER,
         created_at=FIXED,
@@ -206,7 +212,9 @@ def test_token_identity_uses_utterance_id_not_raw_text() -> None:
     token = TranscriptToken(
         utterance_id=utt.id,
         span=TimeSpan(0, 100_000),
-        text=SensitiveText(mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"),
+        text=SensitiveText(
+            mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"
+        ),
     )
     node = make_node(
         namespace=NS,

@@ -27,4 +27,4 @@
 
 G1 records how a media artifact *could* become diarization, transcript, and attribution decisions. It does not run those steps. Overlapping speech is **representable** but not processed. Sensitive content is hashed, redacted, externally referenced, or explicitly classified if embedded.
 
-Python **3.11** is the only supported runtime. See `docs/GRAPH.md` for identifier, node, edge, and validator contracts.
+Python **3.11** is the only supported runtime. A local Python 3.14 interpreter is an environment mismatch, not a product failure. See `docs/GRAPH.md` for identifier, node, edge, and validator contracts. T1 adds verification tooling; it does not run audio or models.

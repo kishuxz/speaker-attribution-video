@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Mapping
+from collections.abc import Mapping
+from datetime import UTC, datetime
 
 from speaker_attribution_video.graph.errors import GraphContractError
 
@@ -14,14 +14,14 @@ TIME_UNIT = "microseconds"
 def utc_now_for_tests(fixed: datetime | None = None) -> datetime:
     if fixed is not None:
         return require_utc(fixed)
-    return datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+    return datetime.now(UTC).replace(tzinfo=UTC)
 
 
 def require_utc(value: datetime) -> datetime:
     if value.tzinfo is None:
         raise GraphContractError("time.naive", "timestamp must be timezone-aware UTC")
-    aware = value.astimezone(timezone.utc)
-    return aware.replace(tzinfo=timezone.utc)
+    aware = value.astimezone(UTC)
+    return aware.replace(tzinfo=UTC)
 
 
 def format_utc(value: datetime) -> str:
@@ -35,7 +35,7 @@ def parse_utc(value: str) -> datetime:
         parsed = datetime.strptime(value, TIMESTAMP_FORMAT)
     except ValueError as exc:
         raise GraphContractError("time.format", "timestamp must use UTC Z serialization") from exc
-    return parsed.replace(tzinfo=timezone.utc)
+    return parsed.replace(tzinfo=UTC)
 
 
 def require_nonneg_int(value: int, *, code: str, label: str) -> int:
@@ -49,7 +49,7 @@ def require_nonneg_int(value: int, *, code: str, label: str) -> int:
 class TimeSpan:
     """Half-open [start_us, end_us) interval in microseconds."""
 
-    __slots__ = ("start_us", "end_us")
+    __slots__ = ("end_us", "start_us")
 
     def __init__(self, start_us: int, end_us: int) -> None:
         self.start_us = require_nonneg_int(start_us, code="span.start", label="start_us")
@@ -77,7 +77,12 @@ class TimeSpan:
     def from_dict(cls, data: Mapping[str, object]) -> TimeSpan:
         start = data.get("start_us")
         end = data.get("end_us")
-        if not isinstance(start, int) or not isinstance(end, int) or isinstance(start, bool) or isinstance(end, bool):
+        if (
+            not isinstance(start, int)
+            or not isinstance(end, int)
+            or isinstance(start, bool)
+            or isinstance(end, bool)
+        ):
             raise GraphContractError("span.type", "span requires integer start_us and end_us")
         return cls(start, end)
 
