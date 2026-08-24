@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://speaker-attribution-video.example/schemas/evidence_graph.g1.v1.json",
+  "title": "EvidenceGraphDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "namespace_id",
+    "job_id",
+    "created_at",
+    "producer",
+    "metadata",
+    "sensitivity",
+    "nodes",
+    "edges",
+    "max_correction_attempts"
+  ],
+  "properties": {
+    "schema_version": { "const": "g1.graph.v1", "type": "string" },
+    "namespace_id": { "type": "string", "minLength": 1 },
+    "job_id": { "type": "string", "minLength": 1 },
+    "created_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6}Z$"
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
+    "metadata": { "type": "object" },
+    "sensitivity": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/GraphNode" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/GraphEdge" }
+    },
+    "max_correction_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    }
+  },
+  "$defs": {
+    "NodeType": {
+      "type": "string",
+      "enum": [
+        "MediaArtifact",
+        "AudioArtifact",
+        "ProcessingStep",
+        "ModelInvocation",
+        "OutputArtifact",
+        "AudioSegment",
+        "DiarizationTurn",
+        "TranscriptUtterance",
+        "TranscriptToken",
+        "SpeakerCluster",
+        "CandidateIdentity",
+        "AudioEvidence",
+        "VisualEvidence",
+        "DialogueEvidence",
+        "AttributionDecision",
+        "ValidationFinding",
+        "CorrectionAttempt",
+        "HumanReviewDecision"
+      ]
+    },
+    "EdgeType": {
+      "type": "string",
+      "enum": [
+        "EXTRACTED_FROM",
+        "NORMALIZED_FROM",
+        "SEGMENTED_FROM",
+        "DIARIZED_AS",
+        "TRANSCRIBED_FROM",
+        "ALIGNED_TO",
+        "ASSIGNED_TO",
+        "CANDIDATE_FOR",
+        "SUPPORTS",
+        "CONTRADICTS",
+        "DERIVED_FROM",
+        "PRODUCED_BY",
+        "VALIDATES",
+        "REJECTS",
+        "CORRECTED_BY",
+        "REVIEWED_BY",
+        "EMITTED_AS"
+      ]
+    },
+    "DecisionState": {
+      "type": "string",
+      "enum": [
+        "ATTRIBUTED",
+        "UNRESOLVED",
+        "CONTRADICTED",
+        "REQUIRES_REVIEW",
+        "REJECTED"
+      ]
+    },
+    "GraphNode": {
+      "type": "object",
+      "required": [
+        "id",
+        "node_type",
+        "schema_version",
+        "namespace_id",
+        "job_id",
+        "created_at",
+        "producer",
+        "metadata",
+        "sensitivity",
+        "provenance_refs",
+        "payload"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "node_type": { "$ref": "#/$defs/NodeType" },
+        "schema_version": { "type": "string" },
+        "namespace_id": { "type": "string" },
+        "job_id": { "type": "string" },
+        "created_at": { "type": "string" },
+        "producer": { "type": "object" },
+        "metadata": { "type": "object" },
+        "sensitivity": { "type": "string" },
+        "provenance_refs": { "type": "array", "items": { "type": "string" } },
+        "payload": { "type": "object" }
+      }
+    },
+    "GraphEdge": {
+      "type": "object",
+      "required": [
+        "id",
+        "edge_type",
+        "schema_version",
+        "namespace_id",
+        "job_id",
+        "created_at",
+        "producer",
+        "metadata",
+        "sensitivity",
+        "provenance_refs",
+        "source_id",
+        "target_id"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "edge_type": { "$ref": "#/$defs/EdgeType" },
+        "schema_version": { "type": "string" },
+        "namespace_id": { "type": "string" },
+        "job_id": { "type": "string" },
+        "created_at": { "type": "string" },
+        "producer": { "type": "object" },
+        "metadata": { "type": "object" },
+        "sensitivity": { "type": "string" },
+        "provenance_refs": { "type": "array", "items": { "type": "string" } },
+        "source_id": { "type": "string" },
+        "target_id": { "type": "string" }
+      }
+    }
+  }
+}

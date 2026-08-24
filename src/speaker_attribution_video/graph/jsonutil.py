@@ -15,12 +15,19 @@ MAX_METADATA_KEYS = 32
 MAX_METADATA_DEPTH = 4
 MAX_JSON_STRING = 2048
 MAX_JSON_LIST = 64
+MAX_DOCUMENT_LIST = 4096
 
 _KEY_RE_MSG = "json key is not a bounded slug"
 
 
-def require_json_value(value: object, *, depth: int = 0, label: str = "value") -> JsonValue:
-    if depth > MAX_METADATA_DEPTH:
+def require_json_value(
+    value: object,
+    *,
+    depth: int = 0,
+    label: str = "value",
+    max_depth: int = MAX_METADATA_DEPTH,
+) -> JsonValue:
+    if depth > max_depth:
         raise GraphContractError("json.depth", f"{label} exceeds max JSON depth")
     if value is None or isinstance(value, bool):
         return value
@@ -35,24 +42,35 @@ def require_json_value(value: object, *, depth: int = 0, label: str = "value") -
             raise GraphContractError("json.string_length", f"{label} string exceeds max length")
         return value
     if isinstance(value, list):
-        if len(value) > MAX_JSON_LIST:
+        limit = MAX_DOCUMENT_LIST if max_depth > MAX_METADATA_DEPTH else MAX_JSON_LIST
+        if len(value) > limit:
             raise GraphContractError("json.list_length", f"{label} list exceeds max length")
-        return [require_json_value(item, depth=depth + 1, label=label) for item in value]
+        return [
+            require_json_value(item, depth=depth + 1, label=label, max_depth=max_depth) for item in value
+        ]
     if isinstance(value, dict):
-        return require_json_object(value, depth=depth, label=label)
+        return require_json_object(value, depth=depth, label=label, max_depth=max_depth)
     raise GraphContractError("json.type", f"{label} is not JSON-safe")
 
 
-def require_json_object(value: object, *, depth: int = 0, label: str = "metadata") -> JsonObject:
+def require_json_object(
+    value: object,
+    *,
+    depth: int = 0,
+    label: str = "metadata",
+    max_depth: int = MAX_METADATA_DEPTH,
+) -> JsonObject:
     if not isinstance(value, dict):
         raise GraphContractError("json.object", f"{label} must be an object")
-    if len(value) > MAX_METADATA_KEYS:
+    if len(value) > MAX_METADATA_KEYS and label == "metadata":
+        raise GraphContractError("json.key_count", f"{label} has too many keys")
+    if len(value) > 256:
         raise GraphContractError("json.key_count", f"{label} has too many keys")
     out: JsonObject = {}
     for key, item in value.items():
         if not isinstance(key, str) or not _is_slug(key):
             raise GraphContractError("json.key", _KEY_RE_MSG)
-        out[key] = require_json_value(item, depth=depth + 1, label=label)
+        out[key] = require_json_value(item, depth=depth + 1, label=label, max_depth=max_depth)
     return out
 
 
