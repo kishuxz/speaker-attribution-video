@@ -31,7 +31,8 @@ Hypothesis strategies are bounded (`max_examples=40` in the `ci` profile).
 Failing examples are printed (`print_blob=True`) so seeds can be replayed.
 Strategies generate integer timelines, overlapping turns, job/namespace pairs,
 candidate sets, evidence edges, attribution states, correction attempts,
-ordering permutations, and canonical JSON round trips. They never load private
+ordering permutations, canonical JSON round trips, path-traversal variants,
+rights/sensitivity combinations, and snapshot idempotency. They never load private
 research data.
 
 ## CI (T1J)

@@ -101,6 +101,8 @@ ignore = [
 "scripts/**" = ["S603", "S607"]
 "src/speaker_attribution_video/backends/conformance/**" = ["S101", "TRY301"]
 "src/speaker_attribution_video/backends/testing/broken.py" = ["S101", "BLE001"]
+"src/speaker_attribution_video/data/conformance/**" = ["S101", "TRY301"]
+"src/speaker_attribution_video/data/testing/broken.py" = ["S101", "BLE001"]
 
 [tool.ruff.format]
 quote-style = "double"
