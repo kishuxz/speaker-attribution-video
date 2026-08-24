@@ -24,7 +24,7 @@ CI runs four focused jobs on **Ubuntu / Python 3.11**: `quality`, `tests`, `pack
 
 Regenerate lockfiles only with the commands in `requirements/README.md`. Do not hand-edit compiled lock output.
 
-See `docs/TESTING.md`, `docs/BACKEND_CONTRACTS.md`, `docs/INGESTION.md`, `docs/LIMITATIONS.md`, `docs/GRAPH.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
+See `docs/TESTING.md`, `docs/BACKEND_CONTRACTS.md`, `docs/INGESTION.md`, `docs/DATASET_MANIFEST.md`, `docs/LIMITATIONS.md`, `docs/GRAPH.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
 
 ## What this is not
 

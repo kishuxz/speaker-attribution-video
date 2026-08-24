@@ -70,4 +70,11 @@ Versioned contracts:
 JSON Schema: `speaker_attribution_video/data/schemas/media_manifest.d1.v1.json`.
 
 Connectors, snapshot storage, the policy engine, and G1 graph projection are
-later D1 nodes. This package still does **no** media processing.
+later D1 nodes except as follows:
+
+* D1C defines `DatasetManifest`, `IngestionSnapshot`, and findings.
+* D1D defines the source-neutral `DataConnector` protocol. There is still **no**
+  HTTP, S3, Hugging Face, or database connector, and no media decode.
+
+JSON Schema: `speaker_attribution_video/data/schemas/media_manifest.d1.v1.json`,
+`dataset_manifest.d1.v1.json`, and `ingestion_snapshot.d1.v1.json`.

@@ -4,19 +4,24 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from speaker_attribution_video.data.dataset import DatasetEntry
 from speaker_attribution_video.data.enums import (
     AcquisitionMethod,
     DataSensitivity,
+    DatasetSplit,
+    IngestionState,
     MediaTypeStatus,
     RightsVerification,
     SourceType,
 )
+from speaker_attribution_video.data.ids import ArtifactId
 from speaker_attribution_video.data.manifest import (
     MediaManifest,
     StreamMetadata,
     make_media_manifest,
 )
 from speaker_attribution_video.data.rights import RightsRecord, project_fixture_rights
+from speaker_attribution_video.data.snapshot import SnapshotEntry
 from speaker_attribution_video.data.source import SourceDescriptor, make_source
 from speaker_attribution_video.data.versions import MANIFEST_SCHEMA_VERSION
 from speaker_attribution_video.graph.ids import JobId, NamespaceId
@@ -94,4 +99,35 @@ def synthetic_manifest(
         duration_us=duration_us,
         audio_stream=StreamMetadata(sample_rate_hz=8000, channels=1, codec="pcm-s16le"),
         warnings=warnings,
+    )
+
+
+def synthetic_entry(
+    *,
+    content_sha256: str = HASH,
+    logical_filename: str = "synthetic-tone-01.wav",
+    split: DatasetSplit = DatasetSplit.DEMO,
+    sensitivity: DataSensitivity = DataSensitivity.SYNTHETIC,
+) -> DatasetEntry:
+    return DatasetEntry(
+        artifact_id=ArtifactId.from_digest(content_sha256),
+        content_sha256=content_sha256,
+        logical_filename=logical_filename,
+        split=split,
+        sensitivity=sensitivity,
+        logical_ref="artifact://synth.example/sources/tone-01",
+    )
+
+
+def synthetic_snapshot_entry(
+    *,
+    content_sha256: str = HASH,
+    logical_filename: str = "synthetic-tone-01.wav",
+    state: IngestionState = IngestionState.ACCEPTED,
+) -> SnapshotEntry:
+    return SnapshotEntry(
+        artifact_id=ArtifactId.from_digest(content_sha256),
+        content_sha256=content_sha256,
+        logical_filename=logical_filename,
+        state=state,
     )

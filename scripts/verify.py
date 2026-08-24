@@ -28,6 +28,8 @@ REQUIRED_WHEEL_PATHS = (
     "speaker_attribution_video/py.typed",
     "speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json",
     "speaker_attribution_video/data/schemas/media_manifest.d1.v1.json",
+    "speaker_attribution_video/data/schemas/dataset_manifest.d1.v1.json",
+    "speaker_attribution_video/data/schemas/ingestion_snapshot.d1.v1.json",
 )
 FORBIDDEN_ARCHIVE_PREFIXES = (
     "tests/",
@@ -102,8 +104,8 @@ STEPS: tuple[tuple[str, tuple[str, ...]], ...] = (
         (
             "-c",
             "from speaker_attribution_video.data.serialize import "
-            "assert_manifest_schema_drift_free; "
-            "assert_manifest_schema_drift_free(); print('data-manifest-schema-drift-ok')",
+            "assert_data_schema_drift_free; "
+            "assert_data_schema_drift_free(); print('data-manifest-schema-drift-ok')",
         ),
     ),
 )
@@ -233,6 +235,18 @@ def inspect_sdist(sdist: Path) -> None:
     if not any(name.endswith("data/schemas/media_manifest.d1.v1.json") for name in names):
         print(
             "FAILED step='inspect-package' exit=1 cmd='sdist missing media manifest JSON Schema'",
+            flush=True,
+        )
+        raise StepFailure(1)
+    if not any(name.endswith("data/schemas/dataset_manifest.d1.v1.json") for name in names):
+        print(
+            "FAILED step='inspect-package' exit=1 cmd='sdist missing dataset JSON Schema'",
+            flush=True,
+        )
+        raise StepFailure(1)
+    if not any(name.endswith("data/schemas/ingestion_snapshot.d1.v1.json") for name in names):
+        print(
+            "FAILED step='inspect-package' exit=1 cmd='sdist missing snapshot JSON Schema'",
             flush=True,
         )
         raise StepFailure(1)

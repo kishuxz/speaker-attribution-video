@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://speaker-attribution-video.example/schemas/ingestion_snapshot.d1.v1.json",
+  "title": "IngestionSnapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "namespace_id",
+    "job_id",
+    "entries",
+    "state",
+    "connector_name",
+    "connector_version",
+    "created_at",
+    "finalized",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": { "const": "d1.snapshot.v1", "type": "string" },
+    "snapshot_id": { "type": "string" },
+    "namespace_id": { "type": "string" },
+    "job_id": { "type": "string" },
+    "entries": { "type": "array" },
+    "state": { "$ref": "#/$defs/IngestionState" },
+    "connector_name": { "type": "string" },
+    "connector_version": { "type": "string" },
+    "created_at": { "type": "string" },
+    "finalized": { "type": "boolean" },
+    "findings": { "type": "array" }
+  },
+  "$defs": {
+    "IngestionState": {
+      "type": "string",
+      "enum": ["ACCEPTED", "DEGRADED", "REJECTED", "PARTIAL", "FAILED_VALIDATION", "FAILED_POLICY"]
+    },
+    "IngestionFindingSeverity": {
+      "type": "string",
+      "enum": ["error", "warning", "info"]
+    }
+  }
+}
