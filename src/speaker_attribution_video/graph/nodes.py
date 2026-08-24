@@ -708,7 +708,7 @@ def _payload_from_dict(cls: type[Payload], data: object) -> Payload:
         ),
         ProcessingStep: lambda d: ProcessingStep(
             step_name=str(d["step_name"]),
-            sequence_index=int(d["sequence_index"]),  # type: ignore[arg-type]
+            sequence_index=require_int(d["sequence_index"], label="sequence_index"),
             parameters=as_json_object(_as_map(d["parameters"])) if d.get("parameters") is not None else None,
         ),
         ModelInvocation: lambda d: ModelInvocation(
@@ -787,7 +787,7 @@ def _payload_from_dict(cls: type[Payload], data: object) -> Payload:
             message=str(d["message"]),
         ),
         CorrectionAttempt: lambda d: CorrectionAttempt(
-            attempt_number=int(d["attempt_number"]),  # type: ignore[arg-type]
+            attempt_number=require_int(d["attempt_number"], label="attempt_number"),
             finding_id=_nid(d.get("finding_id")),
             target_decision_id=_nid(d.get("target_decision_id")),
             reason_code=parse_enum(ReasonCode, d.get("reason_code"), code="correction.reason"),  # type: ignore[arg-type]
@@ -821,6 +821,12 @@ def _opt_str(value: object) -> str | None:
     if isinstance(value, str):
         return value
     raise GraphContractError("node.field", "expected string")
+
+
+def require_int(value: object, *, label: str) -> int:
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    raise GraphContractError("node.field", f"{label} expected integer")
 
 
 def _opt_int(value: object) -> int | None:

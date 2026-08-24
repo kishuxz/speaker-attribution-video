@@ -17,6 +17,10 @@ from speaker_attribution_video.graph.time import format_utc, parse_utc, require_
 from speaker_attribution_video.graph.versions import EDGE_SCHEMA_VERSION, SUPPORTED_EDGE_SCHEMA_VERSIONS
 
 
+def _mapping(value: object) -> Mapping[str, object]:
+    return value if isinstance(value, dict) else {}
+
+
 class EdgeType(str, Enum):
     EXTRACTED_FROM = "EXTRACTED_FROM"
     NORMALIZED_FROM = "NORMALIZED_FROM"
@@ -188,7 +192,7 @@ class GraphEdge:
             namespace_id=NamespaceId(str(data.get("namespace_id"))),
             job_id=JobId(str(data.get("job_id"))),
             created_at=parse_utc(created),
-            producer=Producer.from_dict(data.get("producer") if isinstance(data.get("producer"), dict) else {}),
+            producer=Producer.from_dict(_mapping(data.get("producer"))),
             metadata=as_json_object(data.get("metadata") if isinstance(data.get("metadata"), dict) else {}),
             sensitivity=parse_enum(Sensitivity, data.get("sensitivity"), code="edge.sensitivity"),  # type: ignore[arg-type]
             provenance_refs=tuple(refs),

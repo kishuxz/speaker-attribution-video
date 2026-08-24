@@ -72,16 +72,22 @@ class EvidenceGraphDocument:
         edges_raw = data.get("edges")
         if not isinstance(nodes_raw, list) or not isinstance(edges_raw, list):
             raise GraphContractError("graph.collections", "nodes and edges must be arrays")
+        raw_producer = data.get("producer")
+        producer_map: Mapping[str, object] = raw_producer if isinstance(raw_producer, dict) else {}
+        raw_meta = data.get("metadata")
+        meta_map: Mapping[str, object] = raw_meta if isinstance(raw_meta, dict) else {}
         max_corr = data.get("max_correction_attempts", DEFAULT_MAX_CORRECTIONS)
+        if not isinstance(max_corr, int) or isinstance(max_corr, bool):
+            raise GraphContractError("graph.corrections", "max_correction_attempts must be an integer")
         return cls(
             schema_version=str(data.get("schema_version")),
             namespace_id=NamespaceId(str(data.get("namespace_id"))),
             job_id=JobId(str(data.get("job_id"))),
             created_at=parse_utc(created),
-            producer=Producer.from_dict(data.get("producer") if isinstance(data.get("producer"), dict) else {}),
-            metadata=as_json_object(data.get("metadata") if isinstance(data.get("metadata"), dict) else {}),
+            producer=Producer.from_dict(producer_map),
+            metadata=as_json_object(meta_map),
             sensitivity=parse_enum(Sensitivity, data.get("sensitivity"), code="graph.sensitivity"),  # type: ignore[arg-type]
             nodes=tuple(GraphNode.from_dict(item) for item in nodes_raw),
             edges=tuple(GraphEdge.from_dict(item) for item in edges_raw),
-            max_correction_attempts=int(max_corr) if isinstance(max_corr, int) and not isinstance(max_corr, bool) else max_corr,  # type: ignore[arg-type]
+            max_correction_attempts=max_corr,
         )

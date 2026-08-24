@@ -36,4 +36,4 @@ speaker_attribution_video = ["py.typed", "graph/schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "tests"]

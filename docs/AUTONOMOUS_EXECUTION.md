@@ -4,7 +4,7 @@ Instructions for coding agents and humans working this repository.
 
 ## Current approved phase
 
-**F0 only.** Do not begin G1, do not copy production logic from private research, do not download models.
+**G1 complete (contracts only).** Do not begin T1, D1, model integration, or agent implementation until the G1 report is reviewed. Do not copy production logic from private research. Do not download models.
 
 ## Loop
 

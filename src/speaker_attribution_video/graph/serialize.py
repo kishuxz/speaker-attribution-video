@@ -47,7 +47,7 @@ def load_json_schema() -> dict[str, object]:
     return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 
 
-def python_enums_for_schema() -> dict[str, list[str]]:
+def python_enums_for_schema() -> dict[str, object]:
     return {
         "node_types": [m.value for m in NodeType],
         "edge_types": [m.value for m in EdgeType],
@@ -71,5 +71,9 @@ def assert_schema_drift_free() -> None:
         spec = defs.get(name)
         if not isinstance(spec, dict) or spec.get("enum") != values:
             raise GraphContractError("schema.drift", f"JSON Schema enum drift: {name}")
-    if schema.get("properties", {}).get("schema_version", {}).get("const") != enums["schema_version"]:
+    props = schema.get("properties")
+    if not isinstance(props, dict):
+        raise GraphContractError("schema.drift", "JSON Schema schema_version drift")
+    version_spec = props.get("schema_version")
+    if not isinstance(version_spec, dict) or version_spec.get("const") != enums["schema_version"]:
         raise GraphContractError("schema.drift", "JSON Schema schema_version drift")

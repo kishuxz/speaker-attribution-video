@@ -6,7 +6,7 @@ Apache-2.0 covers original source in this repository only. Model weights, tokeni
 
 ## F0 rule
 
-This repository **must not** download or bundle weights. There is no silent `from_pretrained` on import. CI must not require hub credentials.
+This repository **must not** download or bundle weights. There is no silent `from_pretrained` on import. CI must not require hub credentials. G1 does not invoke models.
 
 ## Intended backends (not implemented in F0)
 

@@ -2,23 +2,24 @@
 
 Speaker Attribution Graph is a production-shaped framework for tracing how audio, transcript and optional video evidence become speaker-attribution decisions. It separates deterministic diarization from bounded attribution agents, preserves unresolved cases, and exposes evidence graphs, evaluation and observability.
 
-This repository (`kishuxz/speaker-attribution-video`) holds original source under Apache-2.0. It is **private during this foundation phase**. It is not a release of a production pipeline, and it does not ship models, datasets, or research media.
+This repository (`kishuxz/speaker-attribution-video`) holds original source under Apache-2.0. It is **private during G1**. It is not a release of a production pipeline, and it does not ship models, datasets, or research media.
 
-## Current phase (F0)
+## Current phase (G1)
 
-Governing foundation only:
+Typed evidence and execution-graph **contracts** only:
 
-- license and third-party boundaries
-- empty typed Python 3.11 package
-- documentation of product, architecture, data/model policy, and limitations
-- import / CLI smoke test
+- identifiers, nodes, edges, attribution and correction rules
+- invariant validator and canonical JSON + JSON Schema
+- synthetic fixtures (engineering tests, not benchmarks)
 
-**Not included yet:** inference code, model adapters, research datasets, weights, or copied private-research implementation.
+There is **no** real diarization, transcription, model inference, or agent execution. Graph provenance is not proof; confidence is not correctness.
 
 ```bash
-python3.11 -m pip install -e ".[dev]"
+python3.11 -m pip install -r requirements.lock
+python3.11 -m pip install -e .
 python3.11 -m speaker_attribution_video --help
 python3.11 -m pytest
+python3.11 scripts/verify_g1.py
 ```
 
 Python **3.11** only (`requires-python = ">=3.11,<3.12"`).
@@ -30,4 +31,4 @@ Python **3.11** only (`requires-python = ">=3.11,<3.12"`).
 - Not a bundle of pyannote, WhisperX, ECAPA, Llama, InsightFace, or LightASD weights
 - InsightFace and LightASD remain **research-only / license review required**
 
-See `docs/LIMITATIONS.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
+See `docs/LIMITATIONS.md`, `docs/GRAPH.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
