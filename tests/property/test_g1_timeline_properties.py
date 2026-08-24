@@ -30,3 +30,19 @@ def test_invalid_span_order_is_rejected(start: int, end: int) -> None:
         TimeSpan(start, end)
     assert exc.value.code in {"span.order", "span.end"}
     assert "transcript" not in str(exc.value).lower()
+
+
+@given(
+    start=_US,
+    inner=st.integers(min_value=1, max_value=50_000),
+    outer=st.integers(min_value=51_000, max_value=200_000),
+)
+def test_contains_and_media_bounds(start: int, inner: int, outer: int) -> None:
+    parent = TimeSpan(start, start + outer)
+    child = TimeSpan(start, start + inner)
+    assert parent.contains(child)
+    parent.within_duration(start + outer)
+    with pytest.raises(GraphContractError) as exc:
+        parent.within_duration(start + inner)
+    assert exc.value.code == "span.media_bounds"
+    assert "private-dialogue" not in str(exc.value)

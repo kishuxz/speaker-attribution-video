@@ -51,6 +51,7 @@ def test_verify_step_order_is_stable() -> None:
         "property-tests",
         "conformance-tests",
         "coverage-check",
+        "coverage-graph-core",
         "json-schema-drift",
     ]
 
