@@ -72,6 +72,15 @@ starting at 1. Corrections are append-only: the resulting decision is a new node
 redacted `message`, `repair_category`). `load_graph` raises before returning an
 invalid document.
 
-Retry exhaustion is represented as `UNRESOLVED` / `REQUIRES_REVIEW` / validation
-failure. The graph does not implement an attribution agent.
+## Canonical serialization (G1G)
+
+Valid documents serialize to deterministic JSON: sorted keys, nodes and edges
+ordered by ID, UTC timestamps, integers only (no NaN/Infinity). Equivalent
+graphs are byte-identical. `loads_document` then `canonical_dumps_document` is
+stable. Invalid documents raise before a graph is returned.
+
+The public JSON Schema is
+`src/speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json`.
+A drift check compares Python enums to schema enums.
+
 

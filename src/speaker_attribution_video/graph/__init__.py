@@ -62,6 +62,12 @@ from speaker_attribution_video.graph.nodes import (
 )
 from speaker_attribution_video.graph.producer import Producer
 from speaker_attribution_video.graph.text import SensitiveText
+from speaker_attribution_video.graph.serialize import (
+    assert_schema_drift_free,
+    canonical_bytes,
+    canonical_dumps_document,
+    loads_document,
+)
 from speaker_attribution_video.graph.time import TimeSpan, format_utc, parse_utc
 from speaker_attribution_video.graph.validate import GraphFinding, GraphValidationError, load_graph, validate_graph
 from speaker_attribution_video.graph.versions import (
@@ -127,8 +133,12 @@ __all__ = [
     "ValidationFinding",
     "VisualEvidence",
     "admit_attribution",
+    "assert_schema_drift_free",
+    "canonical_bytes",
+    "canonical_dumps_document",
     "format_utc",
     "load_graph",
+    "loads_document",
     "make_edge",
     "make_node",
     "parse_utc",
