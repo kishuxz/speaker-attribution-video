@@ -2,6 +2,13 @@
 
 from __future__ import annotations
 
+from speaker_attribution_video.graph.attribution import AdmissionIssue, admit_attribution, view_attribution
+from speaker_attribution_video.graph.edges import (
+    ACYCLIC_EDGE_TYPES,
+    EdgeType,
+    GraphEdge,
+    make_edge,
+)
 from speaker_attribution_video.graph.enums import (
     DecisionState,
     DialogueKind,
@@ -52,12 +59,15 @@ from speaker_attribution_video.graph.producer import Producer
 from speaker_attribution_video.graph.text import SensitiveText
 from speaker_attribution_video.graph.time import TimeSpan, format_utc, parse_utc
 from speaker_attribution_video.graph.versions import (
+    EDGE_SCHEMA_VERSION,
     GRAPH_SCHEMA_VERSION,
     ID_SCHEMA_VERSION,
     NODE_SCHEMA_VERSION,
 )
 
 __all__ = [
+    "ACYCLIC_EDGE_TYPES",
+    "AdmissionIssue",
     "AttributionDecision",
     "AudioArtifact",
     "AudioEvidence",
@@ -68,11 +78,14 @@ __all__ = [
     "DiarizationTurn",
     "DialogueEvidence",
     "DialogueKind",
+    "EDGE_SCHEMA_VERSION",
     "EdgeId",
+    "EdgeType",
     "EvidenceSummary",
     "FindingSeverity",
     "GRAPH_SCHEMA_VERSION",
     "GraphContractError",
+    "GraphEdge",
     "GraphNode",
     "HumanReviewDecision",
     "ID_SCHEMA_VERSION",
@@ -103,7 +116,10 @@ __all__ = [
     "TranscriptUtterance",
     "ValidationFinding",
     "VisualEvidence",
+    "admit_attribution",
     "format_utc",
+    "make_edge",
     "make_node",
     "parse_utc",
+    "view_attribution",
 ]

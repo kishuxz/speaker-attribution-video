@@ -42,4 +42,23 @@ must not include raw transcript content.
 Media nodes record content hash, duration, MIME/container, logical URI, and a
 redacted display name. Raw audio/video bytes are not required.
 
-Full graph validation, edges, and serialization stability are later G1 PRs.
+## Edges (G1C)
+
+Allowed relationship types are explicit. There is no generic `RELATED_TO` escape hatch.
+Cross-namespace and cross-job edges are rejected. Self-edges are rejected.
+
+Provenance/derivation types that must be acyclic (enforced in the graph validator):
+`DERIVED_FROM`, `EXTRACTED_FROM`, `NORMALIZED_FROM`, `SEGMENTED_FROM`,
+`CORRECTED_BY`, `PRODUCED_BY`.
+
+## Attribution admission (G1D)
+
+| State | Rule |
+|---|---|
+| `ATTRIBUTED` | Exactly one selected candidate, in the approved candidate set, and ≥1 `SUPPORTS` edge. Confidence cannot admit this state alone. |
+| `UNRESOLVED` | No selected identity. |
+| `CONTRADICTED` | ≥1 `CONTRADICTS` edge. |
+| `REQUIRES_REVIEW` | Typed `review_reason_code`. |
+| `REJECTED` | Typed rejection reason. |
+
+A model producer may propose a candidate already in the graph; it cannot invent one. Human review is a distinct node type (`HumanReviewDecision`) and overrides must reference a replacement decision.
