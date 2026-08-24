@@ -2,11 +2,11 @@
 
 Speaker Attribution Graph is a production-shaped framework for tracing how audio, transcript and optional video evidence become speaker-attribution decisions. It separates deterministic diarization from bounded attribution agents, preserves unresolved cases, and exposes evidence graphs, evaluation and observability.
 
-This repository (`kishuxz/speaker-attribution-video`) holds original source under Apache-2.0. It is **private during T1**. It is not a release of a production pipeline, and it does not ship models, datasets, or research media.
+This repository (`kishuxz/speaker-attribution-video`) holds original source under Apache-2.0. It is **private during D1**. It is not a release of a production pipeline, and it does not ship models, datasets, or research media.
 
-## Current phase (T1)
+## Current phase (D1)
 
-T1 is the model-free verification foundation. It provides pinned Python 3.11 tooling, `scripts/verify.py`, G1 graph contracts, backend protocols, deterministic fake backends, reusable conformance suites, Hypothesis properties, coverage gates, packaging checks, and Linux CI. There is still **no** real audio processing, diarization, transcription, model inference, agent execution, or public demo.
+T1 (model-free verification) is complete. D1 adds **safe data contracts**: versioned source, rights, sensitivity, and immutable media manifests. There is still **no** real audio processing, diarization, transcription, network dataset connector, model inference, agent execution, or public demo. Local ingestion, when added, is not license verification.
 
 Passing a conformance suite does **not** prove model accuracy. Coverage is evidence of execution, not correctness. Synthetic fixtures are not benchmark data. Model, GPU, and integration tests have not run.
 
@@ -24,7 +24,7 @@ CI runs four focused jobs on **Ubuntu / Python 3.11**: `quality`, `tests`, `pack
 
 Regenerate lockfiles only with the commands in `requirements/README.md`. Do not hand-edit compiled lock output.
 
-See `docs/TESTING.md`, `docs/BACKEND_CONTRACTS.md`, `docs/LIMITATIONS.md`, `docs/GRAPH.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
+See `docs/TESTING.md`, `docs/BACKEND_CONTRACTS.md`, `docs/INGESTION.md`, `docs/LIMITATIONS.md`, `docs/GRAPH.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
 
 ## What this is not
 

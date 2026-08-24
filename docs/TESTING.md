@@ -1,10 +1,6 @@
-# Testing (T1)
+# Testing (T1 + D1)
 
-T1 is a **model-free** verification foundation. Tests use synthetic fixtures and
-deterministic fake backends only. Passing conformance does **not** prove model
-accuracy. Coverage is evidence of **execution**, not correctness. Synthetic
-fixtures are **not** benchmark data. Model, GPU, and integration tests have
-not run.
+T1 is a **model-free** verification foundation. D1 adds contract tests for source, rights, sensitivity, and media manifests. Tests use synthetic fixtures and deterministic fake backends only. Passing conformance does **not** prove model accuracy. Coverage is evidence of **execution**, not correctness. Synthetic fixtures are **not** benchmark data. Model, GPU, and integration tests have not run.
 
 Python **3.11** is the only supported runtime. A local 3.14 interpreter is an
 environment mismatch, not a product failure.
@@ -43,7 +39,7 @@ research data.
 Four focused jobs run on Ubuntu with Python 3.11:
 
 * `quality` — compile, Ruff format/lint, mypy
-* `tests` — unit, property, conformance, coverage floors, schema drift; reports test count, skip count, and coverage
+* `tests` — unit, property, conformance, coverage floors, G1 schema drift, D1 media-manifest schema drift; reports test count, skip count, and coverage
 * `package` — sdist/wheel, content inspection, twine, isolated install
 * `security-public-tree` — public-tree scan and dependency audit
 
@@ -51,7 +47,7 @@ macOS is not part of CI and is not claimed. Skips are never counted as passes. M
 
 ## Packaging (T1I)
 
-`python3.11 scripts/verify.py --job package` builds sdist and wheel, checks that JSON Schema and `py.typed` are included, excludes tests and development files, runs `twine check`, and installs the wheel into an empty virtualenv that does not depend on the source checkout.
+`python3.11 scripts/verify.py --job package` builds sdist and wheel, checks that G1 and D1 JSON Schema files and `py.typed` are included, excludes tests and development files, runs `twine check`, and installs the wheel into an empty virtualenv that does not depend on the source checkout.
 
 
 CI fails if unit, property, or conformance collection drops to zero, if
