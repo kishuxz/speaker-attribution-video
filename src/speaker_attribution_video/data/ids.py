@@ -117,6 +117,10 @@ class ManifestId:
         payload = _sha256_hex(canonical_object(dict(identity_fields)))
         return cls(_format_id("manifest", payload))
 
+    @property
+    def digest(self) -> str:
+        return parse_data_id(self.value, expected_kind="manifest")[2]
+
 
 @dataclass(frozen=True, slots=True)
 class IngestionEventId:
@@ -182,3 +186,7 @@ class SnapshotId:
     def derive(cls, identity_fields: Mapping[str, object]) -> SnapshotId:
         payload = _sha256_hex(canonical_object(dict(identity_fields)))
         return cls(_format_id("snapshot", payload))
+
+    @property
+    def digest(self) -> str:
+        return parse_data_id(self.value, expected_kind="snapshot")[2]

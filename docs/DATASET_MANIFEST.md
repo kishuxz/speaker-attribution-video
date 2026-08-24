@@ -26,4 +26,5 @@ complete ingestion success. `PARTIAL`, `DEGRADED`, `REJECTED`,
 visible. Snapshot identity is stable for equivalent inputs; observation
 timestamps are excluded. Snapshots contain manifests, not media.
 
-This is not license verification and not legal advice.
+This is not license verification and not legal advice. Snapshot JSON may be
+persisted in `ManifestSnapshotStore`; media bytes are never stored there.

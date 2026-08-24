@@ -118,5 +118,33 @@ SHA-256. These tones prove ingestion behavior. They are **not** diarization or
 transcription benchmarks and must not include celebrity names, television
 dialogue, cloned voices, or private audio.
 
-Snapshot storage, the policy engine, and G1 graph projection remain later D1
-nodes.
+## Snapshot store (D1G)
+
+`ManifestSnapshotStore` persists **manifest JSON only**. It never stores raw
+media. Paths are content-addressed (`snapshots/<aa>/<sha256>.json` and
+`manifests/<aa>/<sha256>.json`). Writes validate, fsync, then publish with a
+same-directory temporary file.
+
+* POSIX: `os.link` publishes the final name; an existing identical document is
+  idempotent success; different bytes under the same identity fail closed.
+* Windows: `os.replace` is atomic for the destination name on the same volume.
+  Conflict detection is performed before replace and is not a multi-writer lock.
+
+There is no delete operation and no garbage collection in D1. Reads validate
+again before return. Directory traversal is impossible: only SHA-256 hex
+payloads are used as path components. File permissions are `0700`/`0600` on
+POSIX.
+
+Idempotency is byte identity of the canonical JSON document. Two snapshots that
+share an identity but differ in observation timestamps are a conflict.
+
+## Policy engine (D1H)
+
+`evaluate_policy` is a **deterministic engineering gate**, not legal advice and
+not license verification. It never automates acceptance of third-party terms.
+Unknown never defaults to allow.
+
+Operations: `INGEST`, `TRAIN`, `EVALUATE`, `DEMO`, `REDISTRIBUTE`,
+`EXPORT_METADATA`. Decisions: `ALLOW`, `DENY`, `REQUIRES_REVIEW`.
+
+G1 graph projection remains a later D1 node.
