@@ -61,4 +61,17 @@ Provenance/derivation types that must be acyclic (enforced in the graph validato
 | `REQUIRES_REVIEW` | Typed `review_reason_code`. |
 | `REJECTED` | Typed rejection reason. |
 
-A model producer may propose a candidate already in the graph; it cannot invent one. Human review is a distinct node type (`HumanReviewDecision`) and overrides must reference a replacement decision.
+## Graph document and validator (G1E/G1F)
+
+`EvidenceGraphDocument` holds schema version `g1.graph.v1`, namespace, job, nodes,
+edges, and creation metadata. `max_correction_attempts` defaults to **1** and is
+hard-capped at 8. Attempt numbers for a given target decision must be sequential
+starting at 1. Corrections are append-only: the resulting decision is a new node.
+
+`validate_graph` returns structured findings (`code`, `severity`, node/edge refs,
+redacted `message`, `repair_category`). `load_graph` raises before returning an
+invalid document.
+
+Retry exhaustion is represented as `UNRESOLVED` / `REQUIRES_REVIEW` / validation
+failure. The graph does not implement an attribution agent.
+

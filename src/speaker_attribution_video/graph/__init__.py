@@ -3,6 +3,11 @@
 from __future__ import annotations
 
 from speaker_attribution_video.graph.attribution import AdmissionIssue, admit_attribution, view_attribution
+from speaker_attribution_video.graph.document import (
+    DEFAULT_MAX_CORRECTIONS,
+    HARD_MAX_CORRECTIONS,
+    EvidenceGraphDocument,
+)
 from speaker_attribution_video.graph.edges import (
     ACYCLIC_EDGE_TYPES,
     EdgeType,
@@ -58,6 +63,7 @@ from speaker_attribution_video.graph.nodes import (
 from speaker_attribution_video.graph.producer import Producer
 from speaker_attribution_video.graph.text import SensitiveText
 from speaker_attribution_video.graph.time import TimeSpan, format_utc, parse_utc
+from speaker_attribution_video.graph.validate import GraphFinding, GraphValidationError, load_graph, validate_graph
 from speaker_attribution_video.graph.versions import (
     EDGE_SCHEMA_VERSION,
     GRAPH_SCHEMA_VERSION,
@@ -74,6 +80,7 @@ __all__ = [
     "AudioSegment",
     "CandidateIdentity",
     "CorrectionAttempt",
+    "DEFAULT_MAX_CORRECTIONS",
     "DecisionState",
     "DiarizationTurn",
     "DialogueEvidence",
@@ -81,11 +88,14 @@ __all__ = [
     "EDGE_SCHEMA_VERSION",
     "EdgeId",
     "EdgeType",
+    "EvidenceGraphDocument",
     "EvidenceSummary",
     "FindingSeverity",
     "GRAPH_SCHEMA_VERSION",
     "GraphContractError",
-    "GraphEdge",
+    "GraphFinding",
+    "GraphValidationError",
+    "HARD_MAX_CORRECTIONS",
     "GraphNode",
     "HumanReviewDecision",
     "ID_SCHEMA_VERSION",
@@ -118,8 +128,10 @@ __all__ = [
     "VisualEvidence",
     "admit_attribution",
     "format_utc",
+    "load_graph",
     "make_edge",
     "make_node",
     "parse_utc",
+    "validate_graph",
     "view_attribution",
 ]
