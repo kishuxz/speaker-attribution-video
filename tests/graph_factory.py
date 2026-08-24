@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from speaker_attribution_video.graph.document import EvidenceGraphDocument
 from speaker_attribution_video.graph.edges import EdgeType, make_edge
@@ -15,7 +15,6 @@ from speaker_attribution_video.graph.enums import (
     RepairCategory,
     ReviewOutcome,
     Sensitivity,
-    TextMode,
 )
 from speaker_attribution_video.graph.ids import JobId, MediaId, NamespaceId, ReviewerId
 from speaker_attribution_video.graph.nodes import (
@@ -33,11 +32,10 @@ from speaker_attribution_video.graph.nodes import (
     make_node,
 )
 from speaker_attribution_video.graph.producer import Producer
-from speaker_attribution_video.graph.text import SensitiveText
 from speaker_attribution_video.graph.time import TimeSpan
 from speaker_attribution_video.graph.versions import GRAPH_SCHEMA_VERSION
 
-FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=timezone.utc)
+FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=UTC)
 HASH = "e" * 64
 NS = NamespaceId.from_slug("synth.example")
 JOB = JobId.derive(NS, "job01")
@@ -77,7 +75,11 @@ def _media_audio_step(job_key: str = "job01"):
         ),
         producer=PRODUCER,
         created_at=FIXED,
-        identity_parts={"content_hash": HASH, "uri": "artifact://synth.example/audio/track", "job": job.value},
+        identity_parts={
+            "content_hash": HASH,
+            "uri": "artifact://synth.example/audio/track",
+            "job": job.value,
+        },
     )
     step = make_node(
         namespace=ns,
@@ -88,8 +90,20 @@ def _media_audio_step(job_key: str = "job01"):
         identity_parts={"step": "ingest", "job": job.value},
     )
     edges = (
-        make_edge(edge_type=EdgeType.EXTRACTED_FROM, source=audio, target=media, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.PRODUCED_BY, source=audio, target=step, producer=PRODUCER, created_at=FIXED),
+        make_edge(
+            edge_type=EdgeType.EXTRACTED_FROM,
+            source=audio,
+            target=media,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.PRODUCED_BY,
+            source=audio,
+            target=step,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
     )
     return ns, job, media, audio, step, edges
 
@@ -121,7 +135,9 @@ def one_speaker() -> EvidenceGraphDocument:
     turn = make_node(
         namespace=ns,
         job=job,
-        payload=DiarizationTurn(span=TimeSpan(0, 1_500_000), cluster_key="speaker_00", confidence_bp=9000),
+        payload=DiarizationTurn(
+            span=TimeSpan(0, 1_500_000), cluster_key="speaker_00", confidence_bp=9000
+        ),
         producer=PRODUCER,
         created_at=FIXED,
         identity_parts={"cluster_key": "speaker_00", "span": "0-1500000"},
@@ -157,13 +173,45 @@ def one_speaker() -> EvidenceGraphDocument:
         identity_parts={"subject": cluster.id.value, "state": "ATTRIBUTED"},
     )
     extra = (
-        make_edge(edge_type=EdgeType.DIARIZED_AS, source=turn, target=audio, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.ASSIGNED_TO, source=turn, target=cluster, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.CANDIDATE_FOR, source=cand, target=cluster, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.SUPPORTS, source=evidence, target=decision, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.DERIVED_FROM, source=decision, target=cluster, producer=PRODUCER, created_at=FIXED),
+        make_edge(
+            edge_type=EdgeType.DIARIZED_AS,
+            source=turn,
+            target=audio,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.ASSIGNED_TO,
+            source=turn,
+            target=cluster,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.CANDIDATE_FOR,
+            source=cand,
+            target=cluster,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.SUPPORTS,
+            source=evidence,
+            target=decision,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.DERIVED_FROM,
+            source=decision,
+            target=cluster,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
     )
-    return _document(ns, job, (media, audio, step, cluster, turn, cand, evidence, decision), base + extra)
+    return _document(
+        ns, job, (media, audio, step, cluster, turn, cand, evidence, decision), base + extra
+    )
 
 
 def two_anonymous_speakers() -> EvidenceGraphDocument:
@@ -204,7 +252,9 @@ def two_anonymous_speakers() -> EvidenceGraphDocument:
         namespace=ns,
         job=job,
         payload=AttributionDecision(
-            state=DecisionState.UNRESOLVED, subject_id=c0.id, reason_code=ReasonCode.INSUFFICIENT_EVIDENCE
+            state=DecisionState.UNRESOLVED,
+            subject_id=c0.id,
+            reason_code=ReasonCode.INSUFFICIENT_EVIDENCE,
         ),
         producer=PRODUCER,
         created_at=FIXED,
@@ -214,17 +264,43 @@ def two_anonymous_speakers() -> EvidenceGraphDocument:
         namespace=ns,
         job=job,
         payload=AttributionDecision(
-            state=DecisionState.UNRESOLVED, subject_id=c1.id, reason_code=ReasonCode.INSUFFICIENT_EVIDENCE
+            state=DecisionState.UNRESOLVED,
+            subject_id=c1.id,
+            reason_code=ReasonCode.INSUFFICIENT_EVIDENCE,
         ),
         producer=PRODUCER,
         created_at=FIXED,
         identity_parts={"subject": c1.id.value, "state": "UNRESOLVED"},
     )
     extra = (
-        make_edge(edge_type=EdgeType.DIARIZED_AS, source=t0, target=audio, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.DIARIZED_AS, source=t1, target=audio, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.ASSIGNED_TO, source=t0, target=c0, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.ASSIGNED_TO, source=t1, target=c1, producer=PRODUCER, created_at=FIXED),
+        make_edge(
+            edge_type=EdgeType.DIARIZED_AS,
+            source=t0,
+            target=audio,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.DIARIZED_AS,
+            source=t1,
+            target=audio,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.ASSIGNED_TO,
+            source=t0,
+            target=c0,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.ASSIGNED_TO,
+            source=t1,
+            target=c1,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
     )
     return _document(ns, job, (media, audio, step, c0, c1, t0, t1, d0, d1), base + extra)
 
@@ -264,10 +340,34 @@ def overlapping_turns() -> EvidenceGraphDocument:
         identity_parts={"cluster_key": "speaker_01", "span": "1000000-2500000"},
     )
     extra = (
-        make_edge(edge_type=EdgeType.DIARIZED_AS, source=t0, target=audio, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.DIARIZED_AS, source=t1, target=audio, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.ASSIGNED_TO, source=t0, target=c0, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.ASSIGNED_TO, source=t1, target=c1, producer=PRODUCER, created_at=FIXED),
+        make_edge(
+            edge_type=EdgeType.DIARIZED_AS,
+            source=t0,
+            target=audio,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.DIARIZED_AS,
+            source=t1,
+            target=audio,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.ASSIGNED_TO,
+            source=t0,
+            target=c0,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.ASSIGNED_TO,
+            source=t1,
+            target=c1,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
     )
     return _document(ns, job, (media, audio, step, c0, c1, t0, t1), base + extra)
 
@@ -286,7 +386,9 @@ def unresolved_attribution() -> EvidenceGraphDocument:
         namespace=ns,
         job=job,
         payload=AttributionDecision(
-            state=DecisionState.UNRESOLVED, subject_id=cluster.id, reason_code=ReasonCode.NO_CANDIDATE
+            state=DecisionState.UNRESOLVED,
+            subject_id=cluster.id,
+            reason_code=ReasonCode.NO_CANDIDATE,
         ),
         producer=PRODUCER,
         created_at=FIXED,
@@ -334,8 +436,20 @@ def contradictory_evidence() -> EvidenceGraphDocument:
         identity_parts={"subject": cluster.id.value, "state": "CONTRADICTED"},
     )
     extra = (
-        make_edge(edge_type=EdgeType.SUPPORTS, source=e0, target=decision, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.CONTRADICTS, source=e1, target=decision, producer=PRODUCER, created_at=FIXED),
+        make_edge(
+            edge_type=EdgeType.SUPPORTS,
+            source=e0,
+            target=decision,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.CONTRADICTS,
+            source=e1,
+            target=decision,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
     )
     return _document(ns, job, (media, audio, step, cluster, e0, e1, decision), base + extra)
 
@@ -362,7 +476,9 @@ def human_reviewed() -> EvidenceGraphDocument:
         namespace=ns,
         job=job,
         payload=AttributionDecision(
-            state=DecisionState.UNRESOLVED, subject_id=cluster.id, reason_code=ReasonCode.HUMAN_REQUIRED
+            state=DecisionState.UNRESOLVED,
+            subject_id=cluster.id,
+            reason_code=ReasonCode.HUMAN_REQUIRED,
         ),
         producer=Producer(ProducerKind.MODEL, "attribution.proposer"),
         created_at=FIXED,
@@ -396,12 +512,38 @@ def human_reviewed() -> EvidenceGraphDocument:
         identity_parts={"reviewer": "reviewer.desk"},
     )
     extra = (
-        make_edge(edge_type=EdgeType.CANDIDATE_FOR, source=cand, target=cluster, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.REVIEWED_BY, source=original, target=review, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.DERIVED_FROM, source=replacement, target=original, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.DERIVED_FROM, source=review, target=original, producer=PRODUCER, created_at=FIXED),
+        make_edge(
+            edge_type=EdgeType.CANDIDATE_FOR,
+            source=cand,
+            target=cluster,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.REVIEWED_BY,
+            source=original,
+            target=review,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.DERIVED_FROM,
+            source=replacement,
+            target=original,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.DERIVED_FROM,
+            source=review,
+            target=original,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
     )
-    return _document(ns, job, (media, audio, step, cluster, cand, original, replacement, review), base + extra)
+    return _document(
+        ns, job, (media, audio, step, cluster, cand, original, replacement, review), base + extra
+    )
 
 
 def one_bounded_correction() -> EvidenceGraphDocument:
@@ -418,7 +560,9 @@ def one_bounded_correction() -> EvidenceGraphDocument:
         namespace=ns,
         job=job,
         payload=AttributionDecision(
-            state=DecisionState.UNRESOLVED, subject_id=cluster.id, reason_code=ReasonCode.VALIDATION_FAILED
+            state=DecisionState.UNRESOLVED,
+            subject_id=cluster.id,
+            reason_code=ReasonCode.VALIDATION_FAILED,
         ),
         producer=PRODUCER,
         created_at=FIXED,
@@ -466,12 +610,38 @@ def one_bounded_correction() -> EvidenceGraphDocument:
         identity_parts={"attempt": "1"},
     )
     extra = (
-        make_edge(edge_type=EdgeType.VALIDATES, source=finding, target=original, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.CORRECTED_BY, source=original, target=attempt, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.DERIVED_FROM, source=attempt, target=finding, producer=PRODUCER, created_at=FIXED),
-        make_edge(edge_type=EdgeType.DERIVED_FROM, source=result, target=original, producer=PRODUCER, created_at=FIXED),
+        make_edge(
+            edge_type=EdgeType.VALIDATES,
+            source=finding,
+            target=original,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.CORRECTED_BY,
+            source=original,
+            target=attempt,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.DERIVED_FROM,
+            source=attempt,
+            target=finding,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
+        make_edge(
+            edge_type=EdgeType.DERIVED_FROM,
+            source=result,
+            target=original,
+            producer=PRODUCER,
+            created_at=FIXED,
+        ),
     )
-    return _document(ns, job, (media, audio, step, cluster, original, finding, attempt, result), base + extra)
+    return _document(
+        ns, job, (media, audio, step, cluster, original, finding, attempt, result), base + extra
+    )
 
 
 VALID_BUILDERS = {

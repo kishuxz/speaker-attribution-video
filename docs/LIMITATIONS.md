@@ -1,7 +1,8 @@
 # Limitations
 
+- **T1 is verification foundations.** T1A/T1B add tooling and quality gates only. They do not transcribe, diarize, attribute speakers, or run agents.
 - **G1 is graph contracts only.** It does not transcribe, diarize, attribute speakers, or run agents.
-- Graph provenance is **not proof**. Confidence is **not correctness**.
+- Graph provenance is **not proof**. Confidence is **not correctness**. Coverage is evidence of execution, not correctness.
 - Overlapping speech can be represented; it is not processed.
 - Prior private research is **not** claimed to have been production-ready.
 - Diarization errors cannot be fully repaired by text-only agents (when those agents exist).
@@ -9,4 +10,5 @@
 - Attribution may return `UNRESOLVED`. That is success of the policy, not a failure to “guess.”
 - Third-party tools (pyannote, WhisperX, Llama, ECAPA) have their own hardware, license, and quality limits and are not integrated.
 - Synthetic fixtures are engineering tests, not accuracy benchmarks.
-- This repository is private during G1; Apache-2.0 on original source does not imply a public release.
+- Python **3.11** is the only supported runtime. Local Python 3.14 is an environment mismatch, not a product failure.
+- This repository is private during T1; Apache-2.0 on original source does not imply a public release.

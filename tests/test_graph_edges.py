@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -11,7 +11,6 @@ from speaker_attribution_video.graph.enums import (
     EvidenceSummary,
     ProducerKind,
     ReasonCode,
-    Sensitivity,
 )
 from speaker_attribution_video.graph.errors import GraphContractError
 from speaker_attribution_video.graph.ids import JobId, MediaId, NamespaceId
@@ -26,9 +25,8 @@ from speaker_attribution_video.graph.nodes import (
     make_node,
 )
 from speaker_attribution_video.graph.producer import Producer
-from speaker_attribution_video.graph.time import TimeSpan
 
-FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=timezone.utc)
+FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=UTC)
 HASH = "b" * 64
 NS = NamespaceId.from_slug("synth.example")
 JOB = JobId.derive(NS, "job01")

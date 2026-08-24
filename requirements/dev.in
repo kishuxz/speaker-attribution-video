@@ -1,0 +1,19 @@
+# Direct development dependencies (Python 3.11).
+# Do not add model, audio, video, GPU, or graph-database packages.
+#
+# Compile requires pip<25 (pip-tools 7.4.1). Regenerating this lock:
+#   python3.11 -m pip install 'pip==24.3.1' 'pip-tools==7.4.1'
+#   CUSTOM_COMPILE_COMMAND="python3.11 -m piptools compile --generate-hashes --strip-extras -o requirements-dev.lock requirements/dev.in" \
+#     python3.11 -m piptools compile --generate-hashes --strip-extras -o requirements-dev.lock requirements/dev.in
+#
+ruff==0.11.2
+mypy==1.15.0
+pytest==9.0.3
+pytest-cov==6.1.1
+hypothesis==6.130.8
+build==1.2.2
+twine==6.1.0
+pip-audit==2.9.0
+pip-tools==7.4.1
+setuptools==75.8.2
+wheel==0.46.2

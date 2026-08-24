@@ -1,0 +1,9 @@
+# Runtime dependencies: none.
+# This package has no third-party runtime dependencies.
+#
+# Do not add model, audio, video, GPU, or graph-database packages.
+#
+# If packages are added later, compile with:
+#   python3.11 -m pip install 'pip==24.3.1' 'pip-tools==7.4.1'
+#   CUSTOM_COMPILE_COMMAND="python3.11 -m piptools compile --generate-hashes -o requirements.lock requirements/runtime.in" \
+#     python3.11 -m piptools compile --generate-hashes -o requirements.lock requirements/runtime.in

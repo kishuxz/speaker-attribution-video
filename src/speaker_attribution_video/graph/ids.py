@@ -20,8 +20,8 @@ from __future__ import annotations
 
 import hashlib
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 from speaker_attribution_video.graph.errors import GraphContractError
 from speaker_attribution_video.graph.jsonutil import canonical_object
@@ -29,11 +29,11 @@ from speaker_attribution_video.graph.versions import ID_SCHEMA_VERSION, SUPPORTE
 
 _SLUG_RE = re.compile(r"^[a-z][a-z0-9]{0,31}(?:[._-][a-z0-9]{1,32}){0,6}$")
 _HEX64_RE = re.compile(r"^[a-f0-9]{64}$")
-_ID_RE = re.compile(r"^g1\.id\.v1/(namespace|job|node|edge|media|model_invocation|reviewer)/[A-Za-z0-9._:-]{1,256}$")
-
-_KINDS = frozenset(
-    {"namespace", "job", "node", "edge", "media", "model_invocation", "reviewer"}
+_ID_RE = re.compile(
+    r"^g1\.id\.v1/(namespace|job|node|edge|media|model_invocation|reviewer)/[A-Za-z0-9._:-]{1,256}$"
 )
+
+_KINDS = frozenset({"namespace", "job", "node", "edge", "media", "model_invocation", "reviewer"})
 
 
 def require_slug(value: str, *, label: str) -> str:
@@ -117,7 +117,9 @@ class NodeId:
         parse_id(self.value, expected_kind="node")
 
     @classmethod
-    def derive(cls, namespace: NamespaceId, job: JobId, node_type: str, parts: Mapping[str, object]) -> NodeId:
+    def derive(
+        cls, namespace: NamespaceId, job: JobId, node_type: str, parts: Mapping[str, object]
+    ) -> NodeId:
         payload = _sha256_hex(
             canonical_object(
                 {
@@ -199,7 +201,9 @@ class ModelInvocationId:
         parse_id(self.value, expected_kind="model_invocation")
 
     @classmethod
-    def derive(cls, namespace: NamespaceId, job: JobId, role: str, parameter_digest: str) -> ModelInvocationId:
+    def derive(
+        cls, namespace: NamespaceId, job: JobId, role: str, parameter_digest: str
+    ) -> ModelInvocationId:
         payload = _sha256_hex(
             canonical_object(
                 {

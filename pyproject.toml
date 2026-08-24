@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools==75.8.2", "wheel==0.45.1"]
+requires = ["setuptools==75.8.2", "wheel==0.46.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -18,11 +18,20 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+# Convenience pins for `pip install -e ".[dev]"`.
+# Reproducible installs use requirements.lock + requirements-dev.lock. See requirements/README.md.
 dev = [
-    "pytest==8.3.5",
-    "iniconfig==2.1.0",
-    "packaging==24.2",
-    "pluggy==1.5.0",
+    "ruff==0.11.2",
+    "mypy==1.15.0",
+    "pytest==9.0.3",
+    "pytest-cov==6.1.1",
+    "hypothesis==6.130.8",
+    "build==1.2.2",
+    "twine==6.1.0",
+    "pip-audit==2.9.0",
+    "pip-tools==7.4.1",
+    "setuptools==75.8.2",
+    "wheel==0.46.2",
 ]
 
 [project.scripts]
@@ -37,3 +46,90 @@ speaker_attribution_video = ["py.typed", "graph/schemas/*.json"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src", "tests"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+]
+markers = [
+    "unit: fast deterministic unit tests (core T1 CI)",
+    "property: Hypothesis property tests (core T1 CI)",
+    "conformance: reusable backend/graph contract suites (core T1 CI)",
+    "integration: optional integration tests; not part of core T1 CI",
+    "model: optional model tests; not part of core T1 CI; must not be empty placeholders",
+    "gpu: optional GPU tests; not part of core T1 CI; must not be empty placeholders",
+    "slow: optional long-running tests; not part of core T1 CI",
+]
+filterwarnings = [
+    "error",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests", "scripts"]
+extend-exclude = [".venv", "dist", "build"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "UP",
+    "RUF",
+    "SIM",
+    "C4",
+    "PIE",
+    "BLE",
+    "S",
+    "ERA",
+    "PERF",
+    "TRY",
+    "FURB",
+]
+ignore = [
+    "TRY003",
+    "TRY300",
+    "S404",
+    "S105",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105"]
+"scripts/**" = ["S603", "S607"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src"]
+strict = true
+warn_unreachable = true
+warn_unused_ignores = true
+no_implicit_optional = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+check_untyped_defs = true
+show_error_codes = true
+pretty = true
+
+[tool.coverage.run]
+branch = true
+source = ["speaker_attribution_video"]
+omit = []
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+]
+# Coverage is evidence of execution, not correctness. T1H raises fail-under policy.
+fail_under = 1

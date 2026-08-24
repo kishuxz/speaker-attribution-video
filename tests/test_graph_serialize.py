@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
 from speaker_attribution_video.graph.document import EvidenceGraphDocument
 from speaker_attribution_video.graph.edges import EdgeType, make_edge
-from speaker_attribution_video.graph.enums import DecisionState, ProducerKind, ReasonCode, Sensitivity
+from speaker_attribution_video.graph.enums import (
+    DecisionState,
+    ProducerKind,
+    ReasonCode,
+    Sensitivity,
+)
 from speaker_attribution_video.graph.errors import GraphContractError
 from speaker_attribution_video.graph.ids import JobId, MediaId, NamespaceId
 from speaker_attribution_video.graph.nodes import (
@@ -27,7 +32,7 @@ from speaker_attribution_video.graph.serialize import (
 )
 from speaker_attribution_video.graph.versions import GRAPH_SCHEMA_VERSION
 
-FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=timezone.utc)
+FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=UTC)
 HASH = "d" * 64
 NS = NamespaceId.from_slug("synth.example")
 JOB = JobId.derive(NS, "job01")
@@ -102,8 +107,20 @@ def _valid_doc() -> EvidenceGraphDocument:
         sensitivity=Sensitivity.INTERNAL,
         nodes=(media, audio, step, cluster, decision),
         edges=(
-            make_edge(edge_type=EdgeType.EXTRACTED_FROM, source=audio, target=media, producer=PRODUCER, created_at=FIXED),
-            make_edge(edge_type=EdgeType.PRODUCED_BY, source=audio, target=step, producer=PRODUCER, created_at=FIXED),
+            make_edge(
+                edge_type=EdgeType.EXTRACTED_FROM,
+                source=audio,
+                target=media,
+                producer=PRODUCER,
+                created_at=FIXED,
+            ),
+            make_edge(
+                edge_type=EdgeType.PRODUCED_BY,
+                source=audio,
+                target=step,
+                producer=PRODUCER,
+                created_at=FIXED,
+            ),
         ),
     )
 
@@ -147,4 +164,6 @@ def test_invalid_document_fails_before_return() -> None:
     raw["nodes"] = []
     raw["edges"] = [{"not": "an-edge"}]
     with pytest.raises(GraphContractError):
-        loads_document(canonical_dumps_document(_valid_doc()).replace(GRAPH_SCHEMA_VERSION, "g1.graph.v0", 1))
+        loads_document(
+            canonical_dumps_document(_valid_doc()).replace(GRAPH_SCHEMA_VERSION, "g1.graph.v0", 1)
+        )

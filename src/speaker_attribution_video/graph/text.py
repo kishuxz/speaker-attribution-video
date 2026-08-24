@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 from speaker_attribution_video.graph.enums import Sensitivity, TextMode, parse_enum
 from speaker_attribution_video.graph.errors import GraphContractError, redact_for_error
@@ -50,7 +50,9 @@ class SensitiveText:
     def __post_init__(self) -> None:
         if self.mode is TextMode.REDACTED:
             if self.redacted is None or not _REDACTED_RE.fullmatch(self.redacted):
-                raise GraphContractError("text.redacted", "redacted text must use the [redacted] form")
+                raise GraphContractError(
+                    "text.redacted", "redacted text must use the [redacted] form"
+                )
             if self.embedded is not None:
                 raise GraphContractError("text.embedded", "redacted mode must not embed text")
         elif self.mode is TextMode.HASH:
@@ -100,8 +102,8 @@ class SensitiveText:
         mode = parse_enum(TextMode, data.get("mode"), code="text.mode")
         sensitivity = parse_enum(Sensitivity, data.get("sensitivity"), code="text.sensitivity")
         return cls(
-            mode=mode,  # type: ignore[arg-type]
-            sensitivity=sensitivity,  # type: ignore[arg-type]
+            mode=mode,
+            sensitivity=sensitivity,
             redacted=_opt_str(data.get("redacted")),
             sha256=_opt_str(data.get("sha256")),
             external_ref=_opt_str(data.get("external_ref")),

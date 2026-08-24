@@ -1,28 +1,38 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC
 from pathlib import Path
 
 import pytest
 
 from graph_factory import VALID_BUILDERS, one_speaker
-from speaker_attribution_video.graph.document import EvidenceGraphDocument
 from speaker_attribution_video.graph.edges import EdgeType, make_edge
-from speaker_attribution_video.graph.enums import DecisionState, ProducerKind, ReasonCode, Sensitivity, TextMode
+from speaker_attribution_video.graph.enums import (
+    DecisionState,
+    ProducerKind,
+    ReasonCode,
+    Sensitivity,
+    TextMode,
+)
+from speaker_attribution_video.graph.errors import GraphContractError
 from speaker_attribution_video.graph.ids import JobId, NamespaceId
 from speaker_attribution_video.graph.nodes import (
     AttributionDecision,
-    AudioArtifact,
     CandidateIdentity,
     SpeakerCluster,
     TranscriptUtterance,
     make_node,
 )
 from speaker_attribution_video.graph.producer import Producer
-from speaker_attribution_video.graph.serialize import assert_schema_drift_free, canonical_dumps_document, loads_document
+from speaker_attribution_video.graph.serialize import (
+    assert_schema_drift_free,
+    canonical_dumps_document,
+    loads_document,
+)
 from speaker_attribution_video.graph.text import SensitiveText
 from speaker_attribution_video.graph.time import TimeSpan
-from speaker_attribution_video.graph.validate import validate_graph
+from speaker_attribution_video.graph.validate import load_graph, validate_graph
 from speaker_attribution_video.graph.versions import GRAPH_SCHEMA_VERSION
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "synthetic" / "graph"
@@ -47,17 +57,18 @@ def test_invalid_fixtures_are_rejected() -> None:
         "unsupported_schema.json": {"graph.schema", "graph.invalid", "id.schema"},
         "duplicate_node.json": {"graph.duplicate_node"},
         "cross_job.json": {"graph.isolation", "edge.job"},
-        "attributed_without_evidence.json": {"attribution.evidence_required", "attribution.confidence_not_admission"},
+        "attributed_without_evidence.json": {
+            "attribution.evidence_required",
+            "attribution.confidence_not_admission",
+        },
     }
     for path in sorted(invalid_dir.glob("*.json")):
         raw = json.loads(path.read_text(encoding="utf-8"))
         codes: set[str] = set()
         try:
-            from speaker_attribution_video.graph.validate import load_graph
-
             load_graph(raw)
             pytest.fail(f"{path.name} unexpectedly validated")
-        except Exception as exc:
+        except GraphContractError as exc:
             code = getattr(exc, "code", "")
             codes.add(code)
             findings = getattr(exc, "findings", ())
@@ -102,9 +113,9 @@ def test_admission_is_not_a_constant_true() -> None:
     ns = NamespaceId.from_slug("synth.example")
     job = JobId.derive(ns, "job01")
     producer = Producer(ProducerKind.TEST, "fixture.builder")
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    fixed = datetime(2026, 8, 24, 19, 0, 0, tzinfo=timezone.utc)
+    fixed = datetime(2026, 8, 24, 19, 0, 0, tzinfo=UTC)
     cluster = make_node(
         namespace=ns,
         job=job,
@@ -162,9 +173,9 @@ def test_embedded_text_not_in_invalid_error() -> None:
     ns = NamespaceId.from_slug("synth.example")
     job = JobId.derive(ns, "job01")
     producer = Producer(ProducerKind.TEST, "fixture.builder")
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    fixed = datetime(2026, 8, 24, 19, 0, 0, tzinfo=timezone.utc)
+    fixed = datetime(2026, 8, 24, 19, 0, 0, tzinfo=UTC)
     secret = "copyrighted-dialogue-must-not-appear"
     with pytest.raises(Exception) as err:
         make_node(
@@ -172,7 +183,9 @@ def test_embedded_text_not_in_invalid_error() -> None:
             job=job,
             payload=TranscriptUtterance(
                 span=TimeSpan(0, 10),
-                text=SensitiveText(mode=TextMode.EMBEDDED, sensitivity=Sensitivity.PUBLIC, embedded=secret),
+                text=SensitiveText(
+                    mode=TextMode.EMBEDDED, sensitivity=Sensitivity.PUBLIC, embedded=secret
+                ),
             ),
             producer=producer,
             created_at=fixed,

@@ -1,0 +1,9 @@
+# sdist contents. Tests, caches, and development tooling stay out of the published tree.
+include LICENSE NOTICE README.md pyproject.toml
+graft src/speaker_attribution_video
+global-exclude *.py[cod] __pycache__ .DS_Store
+prune tests
+prune scripts
+prune docs
+prune requirements
+prune .github

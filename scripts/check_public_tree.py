@@ -4,6 +4,7 @@
 Prints path categories only. Does not print file contents or secret values.
 Does not download models. Synthetic fixtures under tests/fixtures/synthetic/ are allowed.
 """
+
 from __future__ import annotations
 
 import re

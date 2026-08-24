@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import TypeVar
 
 from speaker_attribution_video.graph.errors import GraphContractError
+
+E = TypeVar("E", bound=Enum)
 
 
 class Sensitivity(str, Enum):
@@ -124,7 +127,7 @@ class EvidenceSummary(str, Enum):
     OTHER = "other"
 
 
-def parse_enum(enum_cls: type[Enum], value: object, *, code: str) -> Enum:
+def parse_enum(enum_cls: type[E], value: object, *, code: str) -> E:
     if isinstance(value, enum_cls):
         return value
     if isinstance(value, str):

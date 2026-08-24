@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -11,6 +11,7 @@ from speaker_attribution_video.graph.enums import (
     FindingSeverity,
     ProducerKind,
     ReasonCode,
+    RepairCategory,
     Sensitivity,
     TextMode,
 )
@@ -30,21 +31,26 @@ from speaker_attribution_video.graph.nodes import (
     ValidationFinding,
     make_node,
 )
-from speaker_attribution_video.graph.enums import RepairCategory
 from speaker_attribution_video.graph.producer import Producer
 from speaker_attribution_video.graph.text import SensitiveText
 from speaker_attribution_video.graph.time import TimeSpan
-from speaker_attribution_video.graph.validate import GraphValidationError, load_graph, validate_graph
+from speaker_attribution_video.graph.validate import (
+    GraphValidationError,
+    load_graph,
+    validate_graph,
+)
 from speaker_attribution_video.graph.versions import GRAPH_SCHEMA_VERSION
 
-FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=timezone.utc)
+FIXED = datetime(2026, 8, 24, 19, 0, 0, tzinfo=UTC)
 HASH = "c" * 64
 NS = NamespaceId.from_slug("synth.example")
 JOB = JobId.derive(NS, "job01")
 PRODUCER = Producer(ProducerKind.TEST, "fixture.builder")
 
 
-def _doc(nodes, edges, *, max_correction_attempts: int = DEFAULT_MAX_CORRECTIONS) -> EvidenceGraphDocument:
+def _doc(
+    nodes, edges, *, max_correction_attempts: int = DEFAULT_MAX_CORRECTIONS
+) -> EvidenceGraphDocument:
     return EvidenceGraphDocument(
         schema_version=GRAPH_SCHEMA_VERSION,
         namespace_id=NS,
@@ -160,7 +166,8 @@ def test_missing_endpoint() -> None:
 
 def test_derivation_cycle() -> None:
     media, audio, step, cluster, decision, extracted, produced = _base_nodes()
-    # extracted is audio → media EXTRACTED_FROM; add media DERIVED_FROM audio? matrix: Audio DERIVED_FROM Media only.
+    # extracted is audio → media EXTRACTED_FROM.
+    # matrix: Audio DERIVED_FROM Media only.
     # Cycle using NORMALIZED_FROM requires two audio nodes.
     audio2 = make_node(
         namespace=NS,
@@ -175,8 +182,20 @@ def test_derivation_cycle() -> None:
         created_at=FIXED,
         identity_parts={"content_hash": HASH, "uri": "artifact://synth.example/audio/track-b"},
     )
-    e1 = make_edge(edge_type=EdgeType.NORMALIZED_FROM, source=audio, target=audio2, producer=PRODUCER, created_at=FIXED)
-    e2 = make_edge(edge_type=EdgeType.NORMALIZED_FROM, source=audio2, target=audio, producer=PRODUCER, created_at=FIXED)
+    e1 = make_edge(
+        edge_type=EdgeType.NORMALIZED_FROM,
+        source=audio,
+        target=audio2,
+        producer=PRODUCER,
+        created_at=FIXED,
+    )
+    e2 = make_edge(
+        edge_type=EdgeType.NORMALIZED_FROM,
+        source=audio2,
+        target=audio,
+        producer=PRODUCER,
+        created_at=FIXED,
+    )
     doc = _doc((media, audio, audio2, step, cluster, decision), (extracted, produced, e1, e2))
     codes = {f.code for f in validate_graph(doc)}
     assert "graph.cycle" in codes
@@ -189,7 +208,9 @@ def test_token_outside_utterance() -> None:
         job=JOB,
         payload=TranscriptUtterance(
             span=TimeSpan(0, 100_000),
-            text=SensitiveText(mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"),
+            text=SensitiveText(
+                mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"
+            ),
         ),
         producer=PRODUCER,
         created_at=FIXED,
@@ -201,13 +222,17 @@ def test_token_outside_utterance() -> None:
         payload=TranscriptToken(
             utterance_id=utt.id,
             span=TimeSpan(0, 500_000),
-            text=SensitiveText(mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"),
+            text=SensitiveText(
+                mode=TextMode.REDACTED, sensitivity=Sensitivity.SENSITIVE, redacted="[redacted]"
+            ),
         ),
         producer=PRODUCER,
         created_at=FIXED,
         identity_parts={"utt": utt.id.value, "span": "0-500000"},
     )
-    aligned = make_edge(edge_type=EdgeType.ALIGNED_TO, source=token, target=utt, producer=PRODUCER, created_at=FIXED)
+    aligned = make_edge(
+        edge_type=EdgeType.ALIGNED_TO, source=token, target=utt, producer=PRODUCER, created_at=FIXED
+    )
     doc = _doc((media, audio, step, cluster, decision, utt, token), (extracted, produced, aligned))
     codes = {f.code for f in validate_graph(doc)}
     assert "graph.token_bounds" in codes
@@ -268,7 +293,9 @@ def test_correction_beyond_limit_and_non_sequential() -> None:
         producer=PRODUCER,
         created_at=FIXED,
     )
-    doc = _doc((media, audio, step, cluster, decision, finding, attempt), (extracted, produced, derived))
+    doc = _doc(
+        (media, audio, step, cluster, decision, finding, attempt), (extracted, produced, derived)
+    )
     codes = {f.code for f in validate_graph(doc)}
     assert "graph.correction_bound" in codes
     assert "graph.correction_sequence" in codes
@@ -318,7 +345,9 @@ def test_validation_message_omits_embedded_text() -> None:
         created_at=FIXED,
         identity_parts={"utt": utt.id.value, "span": "wide"},
     )
-    aligned = make_edge(edge_type=EdgeType.ALIGNED_TO, source=token, target=utt, producer=PRODUCER, created_at=FIXED)
+    aligned = make_edge(
+        edge_type=EdgeType.ALIGNED_TO, source=token, target=utt, producer=PRODUCER, created_at=FIXED
+    )
     doc = _doc((media, audio, step, cluster, decision, utt, token), (extracted, produced, aligned))
     findings = validate_graph(doc)
     blob = " ".join(f.message for f in findings)

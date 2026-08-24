@@ -1,8 +1,10 @@
-# Locked development/build dependencies for Python 3.11 CI (F0 smoke tests).
-# Runtime package dependencies: none.
-setuptools==75.8.2
-wheel==0.45.1
-iniconfig==2.1.0
-packaging==24.2
-pluggy==1.5.0
-pytest==8.3.5
+# Runtime lock: this package has no runtime third-party dependencies.
+#
+# Regenerated as a comment-only file because requirements/runtime.in lists no packages.
+# Confirmed empty by installing the wheel into a clean Python 3.11 venv and inspecting
+# `pip freeze` (setuptools/pip/wheel only, from the installer).
+#
+# If runtime dependencies are added later, compile them with:
+#   python3.11 -m pip install 'pip==24.3.1' 'pip-tools==7.4.1'
+#   CUSTOM_COMPILE_COMMAND="python3.11 -m piptools compile --generate-hashes -o requirements.lock requirements/runtime.in" \
+#     python3.11 -m piptools compile --generate-hashes -o requirements.lock requirements/runtime.in

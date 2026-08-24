@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
-
-from typing import Mapping
+from typing import Protocol
 
 from speaker_attribution_video.graph.attribution import admit_attribution, view_attribution
 from speaker_attribution_video.graph.document import EvidenceGraphDocument
@@ -45,6 +45,18 @@ class GraphValidationError(GraphContractError):
         super().__init__("graph.invalid", f"graph rejected: {codes}")
 
 
+class _ErrFn(Protocol):
+    def __call__(
+        self,
+        code: str,
+        message: str,
+        *,
+        repair: RepairCategory,
+        node_id: NodeId | None = None,
+        edge_id: EdgeId | None = None,
+    ) -> None: ...
+
+
 def validate_graph(document: EvidenceGraphDocument) -> tuple[GraphFinding, ...]:
     findings: list[GraphFinding] = []
 
@@ -80,7 +92,12 @@ def validate_graph(document: EvidenceGraphDocument) -> tuple[GraphFinding, ...]:
                 node_id=node.id,
             )
         if node.id.value in node_ids:
-            err("graph.duplicate_node", "duplicate node id", repair=RepairCategory.IDENTIFIER, node_id=node.id)
+            err(
+                "graph.duplicate_node",
+                "duplicate node id",
+                repair=RepairCategory.IDENTIFIER,
+                node_id=node.id,
+            )
         else:
             node_ids[node.id.value] = node
 
@@ -95,12 +112,22 @@ def validate_graph(document: EvidenceGraphDocument) -> tuple[GraphFinding, ...]:
                 edge_id=edge.id,
             )
         if edge.id.value in edge_ids:
-            err("graph.duplicate_edge", "duplicate edge id", repair=RepairCategory.IDENTIFIER, edge_id=edge.id)
+            err(
+                "graph.duplicate_edge",
+                "duplicate edge id",
+                repair=RepairCategory.IDENTIFIER,
+                edge_id=edge.id,
+            )
         else:
             edge_ids[edge.id.value] = edge
         triple = (edge.edge_type.value, edge.source_id.value, edge.target_id.value)
         if triple in triples:
-            err("graph.duplicate_edge", "duplicate edge endpoints and type", repair=RepairCategory.IDENTIFIER, edge_id=edge.id)
+            err(
+                "graph.duplicate_edge",
+                "duplicate edge endpoints and type",
+                repair=RepairCategory.IDENTIFIER,
+                edge_id=edge.id,
+            )
         triples.add(triple)
         src = node_ids.get(edge.source_id.value)
         tgt = node_ids.get(edge.target_id.value)
@@ -113,13 +140,36 @@ def validate_graph(document: EvidenceGraphDocument) -> tuple[GraphFinding, ...]:
             )
             continue
         if src.namespace_id != tgt.namespace_id:
-            err("graph.isolation", "cross-namespace edge", repair=RepairCategory.ISOLATION, edge_id=edge.id)
+            err(
+                "graph.isolation",
+                "cross-namespace edge",
+                repair=RepairCategory.ISOLATION,
+                edge_id=edge.id,
+            )
         if src.job_id != tgt.job_id:
-            err("graph.isolation", "cross-job edge", repair=RepairCategory.ISOLATION, edge_id=edge.id)
+            err(
+                "graph.isolation",
+                "cross-job edge",
+                repair=RepairCategory.ISOLATION,
+                edge_id=edge.id,
+            )
         if not matrix_allows(edge.edge_type, src.node_type, tgt.node_type):
-            err("graph.matrix", "edge type is not allowed for these endpoints", repair=RepairCategory.EDGE_MATRIX, edge_id=edge.id)
-        if edge.edge_type in (EdgeType.SUPPORTS, EdgeType.CONTRADICTS) and tgt.node_type is not NodeType.ATTRIBUTION_DECISION:
-            err("graph.evidence_target", "evidence does not point at an attribution decision", repair=RepairCategory.ATTRIBUTION, edge_id=edge.id)
+            err(
+                "graph.matrix",
+                "edge type is not allowed for these endpoints",
+                repair=RepairCategory.EDGE_MATRIX,
+                edge_id=edge.id,
+            )
+        if (
+            edge.edge_type in (EdgeType.SUPPORTS, EdgeType.CONTRADICTS)
+            and tgt.node_type is not NodeType.ATTRIBUTION_DECISION
+        ):
+            err(
+                "graph.evidence_target",
+                "evidence does not point at an attribution decision",
+                repair=RepairCategory.ATTRIBUTION,
+                edge_id=edge.id,
+            )
 
     _validate_outputs(document, node_ids, err)
     _validate_timeline(document, node_ids, err)
@@ -139,11 +189,19 @@ def load_graph(data: Mapping[str, object]) -> EvidenceGraphDocument:
     return document
 
 
-def _validate_outputs(document: EvidenceGraphDocument, node_ids: dict[str, GraphNode], err) -> None:
+def _validate_outputs(
+    document: EvidenceGraphDocument,
+    node_ids: dict[str, GraphNode],
+    err: _ErrFn,
+) -> None:
     produced = {e.source_id.value for e in document.edges if e.edge_type is EdgeType.PRODUCED_BY}
     emitted = {e.target_id.value for e in document.edges if e.edge_type is EdgeType.EMITTED_AS}
     for node in document.nodes:
-        if node.node_type is NodeType.OUTPUT_ARTIFACT and node.id.value not in produced and node.id.value not in emitted:
+        if (
+            node.node_type is NodeType.OUTPUT_ARTIFACT
+            and node.id.value not in produced
+            and node.id.value not in emitted
+        ):
             err(
                 "graph.output_producer",
                 "output artifact has no producing step",
@@ -152,11 +210,15 @@ def _validate_outputs(document: EvidenceGraphDocument, node_ids: dict[str, Graph
             )
 
 
-def _validate_timeline(document: EvidenceGraphDocument, node_ids: dict[str, GraphNode], err) -> None:
+def _validate_timeline(
+    document: EvidenceGraphDocument,
+    node_ids: dict[str, GraphNode],
+    err: _ErrFn,
+) -> None:
     durations: dict[str, int] = {}
     for node in document.nodes:
         payload = node.payload
-        if isinstance(payload, (MediaArtifact, AudioArtifact)) and payload.duration_us is not None:
+        if isinstance(payload, MediaArtifact | AudioArtifact) and payload.duration_us is not None:
             durations[node.id.value] = payload.duration_us
 
     for node in document.nodes:
@@ -164,24 +226,51 @@ def _validate_timeline(document: EvidenceGraphDocument, node_ids: dict[str, Grap
         if isinstance(payload, AudioSegment):
             src = node_ids.get(payload.source_node_id.value)
             if src is None:
-                err("graph.timeline_ref", "segment source is missing", repair=RepairCategory.TIMELINE, node_id=node.id)
+                err(
+                    "graph.timeline_ref",
+                    "segment source is missing",
+                    repair=RepairCategory.TIMELINE,
+                    node_id=node.id,
+                )
             else:
                 duration = durations.get(src.id.value)
                 try:
                     payload.span.within_duration(duration)
                 except GraphContractError:
-                    err("graph.timeline_bounds", "segment exceeds known media duration", repair=RepairCategory.TIMELINE, node_id=node.id)
+                    err(
+                        "graph.timeline_bounds",
+                        "segment exceeds known media duration",
+                        repair=RepairCategory.TIMELINE,
+                        node_id=node.id,
+                    )
         if isinstance(payload, TranscriptToken):
             utt = node_ids.get(payload.utterance_id.value)
             if utt is None or not isinstance(utt.payload, TranscriptUtterance):
-                err("graph.token_utterance", "token utterance is missing", repair=RepairCategory.TIMELINE, node_id=node.id)
+                err(
+                    "graph.token_utterance",
+                    "token utterance is missing",
+                    repair=RepairCategory.TIMELINE,
+                    node_id=node.id,
+                )
             elif not utt.payload.span.contains(payload.span):
-                err("graph.token_bounds", "token span is outside its utterance", repair=RepairCategory.TIMELINE, node_id=node.id)
+                err(
+                    "graph.token_bounds",
+                    "token span is outside its utterance",
+                    repair=RepairCategory.TIMELINE,
+                    node_id=node.id,
+                )
         if isinstance(payload, DiarizationTurn):
             _check_turn_media(document, node, payload.span, durations, node_ids, err)
 
 
-def _check_turn_media(document, node, span: TimeSpan, durations, node_ids, err) -> None:
+def _check_turn_media(
+    document: EvidenceGraphDocument,
+    node: GraphNode,
+    span: TimeSpan,
+    durations: dict[str, int],
+    node_ids: dict[str, GraphNode],
+    err: _ErrFn,
+) -> None:
     for edge in document.edges:
         if edge.source_id != node.id or edge.edge_type is not EdgeType.DIARIZED_AS:
             continue
@@ -191,15 +280,25 @@ def _check_turn_media(document, node, span: TimeSpan, durations, node_ids, err) 
         duration = durations.get(target.id.value)
         if isinstance(target.payload, AudioSegment):
             if not target.payload.span.contains(span):
-                err("graph.turn_bounds", "turn is outside its audio segment", repair=RepairCategory.TIMELINE, node_id=node.id)
+                err(
+                    "graph.turn_bounds",
+                    "turn is outside its audio segment",
+                    repair=RepairCategory.TIMELINE,
+                    node_id=node.id,
+                )
             duration = durations.get(target.payload.source_node_id.value, duration)
         try:
             span.within_duration(duration)
         except GraphContractError:
-            err("graph.turn_bounds", "turn exceeds known media duration", repair=RepairCategory.TIMELINE, node_id=node.id)
+            err(
+                "graph.turn_bounds",
+                "turn exceeds known media duration",
+                repair=RepairCategory.TIMELINE,
+                node_id=node.id,
+            )
 
 
-def _validate_attribution(document: EvidenceGraphDocument, err) -> None:
+def _validate_attribution(document: EvidenceGraphDocument, err: _ErrFn) -> None:
     for node in document.nodes:
         if node.node_type is not NodeType.ATTRIBUTION_DECISION:
             continue
@@ -208,7 +307,11 @@ def _validate_attribution(document: EvidenceGraphDocument, err) -> None:
             err(issue.code, issue.message, repair=RepairCategory.ATTRIBUTION, node_id=issue.node_id)
 
 
-def _validate_corrections(document: EvidenceGraphDocument, node_ids: dict[str, GraphNode], err) -> None:
+def _validate_corrections(
+    document: EvidenceGraphDocument,
+    node_ids: dict[str, GraphNode],
+    err: _ErrFn,
+) -> None:
     by_target: dict[str, list[GraphNode]] = defaultdict(list)
     for node in document.nodes:
         if node.node_type is not NodeType.CORRECTION_ATTEMPT:
@@ -218,25 +321,55 @@ def _validate_corrections(document: EvidenceGraphDocument, node_ids: dict[str, G
             continue
         target = node_ids.get(payload.target_decision_id.value)
         if target is None or target.job_id != document.job_id:
-            err("graph.correction_job", "correction cannot target another job", repair=RepairCategory.CORRECTION, node_id=node.id)
+            err(
+                "graph.correction_job",
+                "correction cannot target another job",
+                repair=RepairCategory.CORRECTION,
+                node_id=node.id,
+            )
             continue
         if target.node_type is not NodeType.ATTRIBUTION_DECISION:
-            err("graph.correction_target", "correction target is not a decision", repair=RepairCategory.CORRECTION, node_id=node.id)
+            err(
+                "graph.correction_target",
+                "correction target is not a decision",
+                repair=RepairCategory.CORRECTION,
+                node_id=node.id,
+            )
             continue
         finding = node_ids.get(payload.finding_id.value)
         if finding is None or finding.node_type is not NodeType.VALIDATION_FINDING:
-            err("graph.correction_finding", "correction finding is missing", repair=RepairCategory.CORRECTION, node_id=node.id)
+            err(
+                "graph.correction_finding",
+                "correction finding is missing",
+                repair=RepairCategory.CORRECTION,
+                node_id=node.id,
+            )
         if payload.attempt_number > document.max_correction_attempts:
-            err("graph.correction_bound", "correction attempt exceeds the configured maximum", repair=RepairCategory.CORRECTION, node_id=node.id)
+            err(
+                "graph.correction_bound",
+                "correction attempt exceeds the configured maximum",
+                repair=RepairCategory.CORRECTION,
+                node_id=node.id,
+            )
         if payload.resulting_decision_id is not None:
             result = node_ids.get(payload.resulting_decision_id.value)
             if result is None:
-                err("graph.correction_result", "resulting decision is missing", repair=RepairCategory.CORRECTION, node_id=node.id)
+                err(
+                    "graph.correction_result",
+                    "resulting decision is missing",
+                    repair=RepairCategory.CORRECTION,
+                    node_id=node.id,
+                )
             elif result.id == target.id:
-                err("graph.correction_overwrite", "correction must not overwrite the prior decision", repair=RepairCategory.CORRECTION, node_id=node.id)
+                err(
+                    "graph.correction_overwrite",
+                    "correction must not overwrite the prior decision",
+                    repair=RepairCategory.CORRECTION,
+                    node_id=node.id,
+                )
         by_target[payload.target_decision_id.value].append(node)
 
-    for _target, attempts in by_target.items():
+    for attempts in by_target.values():
         numbers = sorted(
             n.payload.attempt_number for n in attempts if isinstance(n.payload, CorrectionAttempt)
         )
@@ -250,8 +383,11 @@ def _validate_corrections(document: EvidenceGraphDocument, node_ids: dict[str, G
             )
 
 
-def _validate_reviews(document: EvidenceGraphDocument, node_ids: dict[str, GraphNode], err) -> None:
-    reviewed = {e.target_id.value: e.source_id for e in document.edges if e.edge_type is EdgeType.REVIEWED_BY}
+def _validate_reviews(
+    document: EvidenceGraphDocument,
+    node_ids: dict[str, GraphNode],
+    err: _ErrFn,
+) -> None:
     for node in document.nodes:
         if node.node_type is not NodeType.HUMAN_REVIEW_DECISION:
             continue
@@ -260,17 +396,32 @@ def _validate_reviews(document: EvidenceGraphDocument, node_ids: dict[str, Graph
             continue
         original = node_ids.get(payload.target_decision_id.value)
         if original is None:
-            err("graph.review_target", "review target is missing", repair=RepairCategory.REVIEW, node_id=node.id)
+            err(
+                "graph.review_target",
+                "review target is missing",
+                repair=RepairCategory.REVIEW,
+                node_id=node.id,
+            )
             continue
         if payload.replacement_decision_id is not None:
             replacement = node_ids.get(payload.replacement_decision_id.value)
             if replacement is None:
-                err("graph.review_replacement", "replacement decision is missing", repair=RepairCategory.REVIEW, node_id=node.id)
+                err(
+                    "graph.review_replacement",
+                    "replacement decision is missing",
+                    repair=RepairCategory.REVIEW,
+                    node_id=node.id,
+                )
             elif replacement.id == original.id:
-                err("graph.review_overwrite", "review override must retain the original decision", repair=RepairCategory.REVIEW, node_id=node.id)
+                err(
+                    "graph.review_overwrite",
+                    "review override must retain the original decision",
+                    repair=RepairCategory.REVIEW,
+                    node_id=node.id,
+                )
 
 
-def _validate_acyclic(document: EvidenceGraphDocument, err) -> None:
+def _validate_acyclic(document: EvidenceGraphDocument, err: _ErrFn) -> None:
     adjacency: dict[str, list[str]] = defaultdict(list)
     edge_for: dict[tuple[str, str], EdgeId] = {}
     for edge in document.edges:

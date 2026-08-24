@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Mapping
+from typing import Any
 
 from speaker_attribution_video.graph.enums import NodeType, Sensitivity, parse_enum
 from speaker_attribution_video.graph.errors import GraphContractError
@@ -14,7 +15,10 @@ from speaker_attribution_video.graph.jsonutil import JsonObject, as_json_object
 from speaker_attribution_video.graph.nodes import GraphNode
 from speaker_attribution_video.graph.producer import Producer
 from speaker_attribution_video.graph.time import format_utc, parse_utc, require_utc
-from speaker_attribution_video.graph.versions import EDGE_SCHEMA_VERSION, SUPPORTED_EDGE_SCHEMA_VERSIONS
+from speaker_attribution_video.graph.versions import (
+    EDGE_SCHEMA_VERSION,
+    SUPPORTED_EDGE_SCHEMA_VERSIONS,
+)
 
 
 def _mapping(value: object) -> Mapping[str, object]:
@@ -100,7 +104,12 @@ ALLOWED_MATRIX: dict[EdgeType, frozenset[tuple[NodeType, NodeType]]] = {
         (NodeType.VALIDATION_FINDING, NodeType.ATTRIBUTION_DECISION),
     ),
     EdgeType.PRODUCED_BY: _pairs(
-        *((src, tgt) for src in NodeType for tgt in (NodeType.PROCESSING_STEP, NodeType.MODEL_INVOCATION) if src is not tgt)
+        *(
+            (src, tgt)
+            for src in NodeType
+            for tgt in (NodeType.PROCESSING_STEP, NodeType.MODEL_INVOCATION)
+            if src is not tgt
+        )
     ),
     EdgeType.VALIDATES: _pairs((NodeType.VALIDATION_FINDING, NodeType.ATTRIBUTION_DECISION)),
     EdgeType.REJECTS: _pairs((NodeType.VALIDATION_FINDING, NodeType.ATTRIBUTION_DECISION)),
@@ -115,9 +124,7 @@ ALLOWED_MATRIX: dict[EdgeType, frozenset[tuple[NodeType, NodeType]]] = {
 
 # PRODUCED_BY generated pairs include ProcessingStep → ProcessingStep. Remove self-type if present.
 ALLOWED_MATRIX[EdgeType.PRODUCED_BY] = frozenset(
-    (src, tgt)
-    for src, tgt in ALLOWED_MATRIX[EdgeType.PRODUCED_BY]
-    if src is not tgt
+    (src, tgt) for src, tgt in ALLOWED_MATRIX[EdgeType.PRODUCED_BY] if src is not tgt
 )
 
 ACYCLIC_EDGE_TYPES = frozenset(
@@ -187,14 +194,16 @@ class GraphEdge:
             raise GraphContractError("edge.provenance", "provenance refs are invalid")
         return cls(
             id=EdgeId(str(data.get("id"))),
-            edge_type=parse_enum(EdgeType, data.get("edge_type"), code="edge.type"),  # type: ignore[arg-type]
+            edge_type=parse_enum(EdgeType, data.get("edge_type"), code="edge.type"),
             schema_version=str(data.get("schema_version")),
             namespace_id=NamespaceId(str(data.get("namespace_id"))),
             job_id=JobId(str(data.get("job_id"))),
             created_at=parse_utc(created),
             producer=Producer.from_dict(_mapping(data.get("producer"))),
-            metadata=as_json_object(data.get("metadata") if isinstance(data.get("metadata"), dict) else {}),
-            sensitivity=parse_enum(Sensitivity, data.get("sensitivity"), code="edge.sensitivity"),  # type: ignore[arg-type]
+            metadata=as_json_object(
+                data.get("metadata") if isinstance(data.get("metadata"), dict) else {}
+            ),
+            sensitivity=parse_enum(Sensitivity, data.get("sensitivity"), code="edge.sensitivity"),
             provenance_refs=tuple(refs),
             source_id=NodeId(str(data.get("source_id"))),
             target_id=NodeId(str(data.get("target_id"))),
@@ -226,8 +235,12 @@ def make_edge(
     if source.id == target.id:
         raise GraphContractError("edge.self", "self-edges are not permitted")
     if not matrix_allows(edge_type, source.node_type, target.node_type):
-        raise GraphContractError("edge.matrix", "source and target types are not allowed for this edge")
-    edge_id = EdgeId.derive(source.namespace_id, source.job_id, edge_type.value, source.id, target.id)
+        raise GraphContractError(
+            "edge.matrix", "source and target types are not allowed for this edge"
+        )
+    edge_id = EdgeId.derive(
+        source.namespace_id, source.job_id, edge_type.value, source.id, target.id
+    )
     return GraphEdge(
         id=edge_id,
         edge_type=edge_type,

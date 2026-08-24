@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 from speaker_attribution_video.graph.enums import ProducerKind, parse_enum
 from speaker_attribution_video.graph.errors import GraphContractError
@@ -29,4 +29,4 @@ class Producer:
         name = data.get("name")
         if not isinstance(name, str):
             raise GraphContractError("producer.name", "producer name is invalid")
-        return cls(kind=kind, name=name)  # type: ignore[arg-type]
+        return cls(kind=kind, name=name)

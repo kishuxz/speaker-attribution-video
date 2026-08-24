@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Mapping, Sequence
+from collections.abc import Mapping
 
 from speaker_attribution_video.graph.errors import GraphContractError
 
@@ -36,7 +36,9 @@ def require_json_value(
             raise GraphContractError("json.int_range", f"{label} integer is out of bounds")
         return value
     if isinstance(value, float):
-        raise GraphContractError("json.float_forbidden", f"{label} must not use floating-point numbers")
+        raise GraphContractError(
+            "json.float_forbidden", f"{label} must not use floating-point numbers"
+        )
     if isinstance(value, str):
         if len(value) > MAX_JSON_STRING:
             raise GraphContractError("json.string_length", f"{label} string exceeds max length")
@@ -46,7 +48,8 @@ def require_json_value(
         if len(value) > limit:
             raise GraphContractError("json.list_length", f"{label} list exceeds max length")
         return [
-            require_json_value(item, depth=depth + 1, label=label, max_depth=max_depth) for item in value
+            require_json_value(item, depth=depth + 1, label=label, max_depth=max_depth)
+            for item in value
         ]
     if isinstance(value, dict):
         return require_json_object(value, depth=depth, label=label, max_depth=max_depth)
