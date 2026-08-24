@@ -57,3 +57,59 @@ class MediaTypeStatus(str, Enum):
     DECLARED = "declared"
     DETECTED = "detected"
     UNKNOWN = "unknown"
+
+
+class DatasetSplit(str, Enum):
+    TRAIN = "TRAIN"
+    VALIDATION = "VALIDATION"
+    TEST = "TEST"
+    DEMO = "DEMO"
+    UNASSIGNED = "UNASSIGNED"
+
+
+class IntendedUse(str, Enum):
+    TRAINING = "training"
+    EVALUATION = "evaluation"
+    DEMO = "demo"
+    FIXTURE = "fixture"
+    UNSPECIFIED = "unspecified"
+
+
+class IngestionState(str, Enum):
+    ACCEPTED = "ACCEPTED"
+    DEGRADED = "DEGRADED"
+    REJECTED = "REJECTED"
+    PARTIAL = "PARTIAL"
+    FAILED_VALIDATION = "FAILED_VALIDATION"
+    FAILED_POLICY = "FAILED_POLICY"
+
+
+class IngestionFindingSeverity(str, Enum):
+    ERROR = "error"
+    WARNING = "warning"
+    INFO = "info"
+
+
+class ConnectorCapability(str, Enum):
+    LOCAL_FILES = "local_files"
+    DIRECTORY_MANIFESTS = "directory_manifests"
+    SYNTHETIC_GENERATION = "synthetic_generation"
+    EXTERNAL_REFERENCES = "external_references"
+    CHECKSUM_VERIFICATION = "checksum_verification"
+    IMMUTABLE_SNAPSHOTS = "immutable_snapshots"
+    RIGHTS_METADATA = "rights_metadata"
+    SENSITIVITY_ENFORCEMENT = "sensitivity_enforcement"
+
+
+class ConnectorFailureReason(str, Enum):
+    INVALID_INPUT = "invalid_input"
+    UNSUPPORTED_CAPABILITY = "unsupported_capability"
+    UNSAFE_CONFIGURATION = "unsafe_configuration"
+    SCHEMA_MISMATCH = "schema_mismatch"
+    POLICY_REJECTION = "policy_rejection"
+    CHECKSUM_MISMATCH = "checksum_mismatch"
+    RESOURCE_LIMIT = "resource_limit"
+    CANCELLATION = "cancellation"
+    CHANGED_DURING_READ = "changed_during_read"
+    IO_FAILURE = "io_failure"
+    PATH_ESCAPE = "path_escape"

@@ -25,7 +25,7 @@ Each protocol exposes identity, version, configuration fingerprint, capability d
 - Exceptions and telemetry must not include transcript text, raw media, tokens, or private filesystem paths.
 - Fake backends live in `speaker_attribution_video.backends.testing` and accept `artifact://synth.example/` inputs only.
 - Reusable conformance suites live in `speaker_attribution_video.backends.conformance`. Future backends must call those helpers rather than copying tests. Anti-vacuity backends in `backends.testing.broken` exist only to prove the suites fail with stable finding codes.
-- D1 data contracts live in `speaker_attribution_video.data` and do not implement these model backends. There is no `DataConnector` in this PR.
+- D1 data contracts live in `speaker_attribution_video.data`. `DataConnector` is a source-neutral protocol for inspect/ingest of declared local or synthetic references. There is no HTTP, S3, Hugging Face, or database connector.
 
 ## Result and failure taxonomies
 

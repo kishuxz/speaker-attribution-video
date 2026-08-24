@@ -77,6 +77,10 @@ def test_inspect_wheel_requires_schema_and_excludes_tests(tmp_path: Path) -> Non
         archive.writestr("speaker_attribution_video/py.typed", "")
         archive.writestr("speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json", "{}")
         archive.writestr("speaker_attribution_video/data/schemas/media_manifest.d1.v1.json", "{}")
+        archive.writestr("speaker_attribution_video/data/schemas/dataset_manifest.d1.v1.json", "{}")
+        archive.writestr(
+            "speaker_attribution_video/data/schemas/ingestion_snapshot.d1.v1.json", "{}"
+        )
         archive.writestr("speaker_attribution_video/cli.py", "x=1\n")
     verify.inspect_wheel(wheel)
     bad = tmp_path / "bad.whl"
@@ -84,6 +88,10 @@ def test_inspect_wheel_requires_schema_and_excludes_tests(tmp_path: Path) -> Non
         archive.writestr("speaker_attribution_video/py.typed", "")
         archive.writestr("speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json", "{}")
         archive.writestr("speaker_attribution_video/data/schemas/media_manifest.d1.v1.json", "{}")
+        archive.writestr("speaker_attribution_video/data/schemas/dataset_manifest.d1.v1.json", "{}")
+        archive.writestr(
+            "speaker_attribution_video/data/schemas/ingestion_snapshot.d1.v1.json", "{}"
+        )
         archive.writestr("tests/secret.py", "assert False\n")
     with pytest.raises(verify.StepFailure):
         verify.inspect_wheel(bad)

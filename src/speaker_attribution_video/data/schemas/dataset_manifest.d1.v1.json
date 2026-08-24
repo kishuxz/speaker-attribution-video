@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://speaker-attribution-video.example/schemas/dataset_manifest.d1.v1.json",
+  "title": "DatasetManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "dataset_id",
+    "name",
+    "version",
+    "source",
+    "rights",
+    "sensitivity",
+    "entries",
+    "split",
+    "intended_use",
+    "prohibited_uses",
+    "content_digests",
+    "created_at",
+    "producer"
+  ],
+  "properties": {
+    "schema_version": { "const": "d1.dataset.v1", "type": "string" },
+    "dataset_id": { "type": "string" },
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "source": { "type": "object" },
+    "rights": { "type": "object" },
+    "sensitivity": { "type": "string" },
+    "entries": { "type": "array" },
+    "split": { "$ref": "#/$defs/DatasetSplit" },
+    "intended_use": { "$ref": "#/$defs/IntendedUse" },
+    "prohibited_uses": { "type": "array", "items": { "type": "string" } },
+    "content_digests": { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string" },
+    "producer": { "type": "string" }
+  },
+  "$defs": {
+    "DatasetSplit": {
+      "type": "string",
+      "enum": ["TRAIN", "VALIDATION", "TEST", "DEMO", "UNASSIGNED"]
+    },
+    "IntendedUse": {
+      "type": "string",
+      "enum": ["training", "evaluation", "demo", "fixture", "unspecified"]
+    }
+  }
+}

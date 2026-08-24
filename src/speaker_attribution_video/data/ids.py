@@ -16,9 +16,9 @@ from speaker_attribution_video.graph.ids import require_hex64, require_slug
 from speaker_attribution_video.graph.jsonutil import canonical_object
 
 _ID_RE = re.compile(
-    r"^d1\.id\.v1/(source|artifact|manifest|ingestion_event)/[A-Za-z0-9._:-]{1,256}$"
+    r"^d1\.id\.v1/(source|artifact|manifest|ingestion_event|dataset|snapshot)/[A-Za-z0-9._:-]{1,256}$"
 )
-_KINDS = frozenset({"source", "artifact", "manifest", "ingestion_event"})
+_KINDS = frozenset({"source", "artifact", "manifest", "ingestion_event", "dataset", "snapshot"})
 
 
 def _sha256_hex(canonical_json: str) -> str:
@@ -143,3 +143,42 @@ class IngestionEventId:
             )
         )
         return cls(_format_id("ingestion_event", payload))
+
+
+@dataclass(frozen=True, slots=True)
+class DatasetId:
+    """Dataset identity: name and version only. Entries are hashed separately."""
+
+    value: str
+
+    def __post_init__(self) -> None:
+        parse_data_id(self.value, expected_kind="dataset")
+
+    @classmethod
+    def derive(cls, *, name: str, version: str) -> DatasetId:
+        payload = _sha256_hex(
+            canonical_object(
+                {
+                    "kind": "dataset",
+                    "name": require_slug(name, label="dataset_name"),
+                    "schema": DATA_ID_SCHEMA_VERSION,
+                    "version": require_slug(version, label="dataset_version"),
+                }
+            )
+        )
+        return cls(_format_id("dataset", payload))
+
+
+@dataclass(frozen=True, slots=True)
+class SnapshotId:
+    """Snapshot identity: canonical entries excluding observation timestamps."""
+
+    value: str
+
+    def __post_init__(self) -> None:
+        parse_data_id(self.value, expected_kind="snapshot")
+
+    @classmethod
+    def derive(cls, identity_fields: Mapping[str, object]) -> SnapshotId:
+        payload = _sha256_hex(canonical_object(dict(identity_fields)))
+        return cls(_format_id("snapshot", payload))

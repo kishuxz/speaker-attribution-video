@@ -5,9 +5,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from speaker_attribution_video.data.dataset import DatasetManifest
 from speaker_attribution_video.data.enums import (
     AcquisitionMethod,
     DataSensitivity,
+    DatasetSplit,
+    IngestionFindingSeverity,
+    IngestionState,
+    IntendedUse,
     MediaTypeStatus,
     RedactionState,
     RightsVerification,
@@ -15,7 +20,12 @@ from speaker_attribution_video.data.enums import (
 )
 from speaker_attribution_video.data.errors import DataContractError
 from speaker_attribution_video.data.manifest import MediaManifest
-from speaker_attribution_video.data.versions import MANIFEST_SCHEMA_VERSION
+from speaker_attribution_video.data.snapshot import IngestionSnapshot
+from speaker_attribution_video.data.versions import (
+    DATASET_SCHEMA_VERSION,
+    MANIFEST_SCHEMA_VERSION,
+    SNAPSHOT_SCHEMA_VERSION,
+)
 from speaker_attribution_video.graph.jsonutil import canonical_dumps, require_json_object
 
 SCHEMA_PATH = Path(__file__).resolve().parent / "schemas" / "media_manifest.d1.v1.json"
@@ -44,15 +54,7 @@ def loads_manifest(text: str) -> MediaManifest:
 
 
 def load_json_schema() -> dict[str, object]:
-    loaded: object = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-    if not isinstance(loaded, dict):
-        raise DataContractError("schema.json", "JSON Schema must be an object")
-    schema: dict[str, object] = {}
-    for key, value in loaded.items():
-        if not isinstance(key, str):
-            raise DataContractError("schema.json", "JSON Schema keys must be strings")
-        schema[key] = value
-    return schema
+    return _load_schema_file(SCHEMA_PATH)
 
 
 def python_enums_for_schema() -> dict[str, object]:
@@ -67,20 +69,24 @@ def python_enums_for_schema() -> dict[str, object]:
     }
 
 
-def assert_manifest_schema_drift_free() -> None:
-    schema = load_json_schema()
-    enums = python_enums_for_schema()
+def _load_schema_file(path: Path) -> dict[str, object]:
+    loaded: object = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise DataContractError("schema.json", "JSON Schema must be an object")
+    schema: dict[str, object] = {}
+    for key, value in loaded.items():
+        if not isinstance(key, str):
+            raise DataContractError("schema.json", "JSON Schema keys must be strings")
+        schema[key] = value
+    return schema
+
+
+def _assert_schema_enums(
+    schema: dict[str, object], expected: dict[str, object], *, version: str
+) -> None:
     defs = schema.get("$defs")
     if not isinstance(defs, dict):
         raise DataContractError("schema.defs", "JSON Schema is missing $defs")
-    expected = {
-        "AcquisitionMethod": enums["acquisition_methods"],
-        "DataSensitivity": enums["sensitivities"],
-        "MediaTypeStatus": enums["media_type_statuses"],
-        "RedactionState": enums["redaction_states"],
-        "RightsVerification": enums["rights_verifications"],
-        "SourceType": enums["source_types"],
-    }
     for name, values in expected.items():
         spec = defs.get(name)
         if not isinstance(spec, dict) or spec.get("enum") != values:
@@ -89,5 +95,90 @@ def assert_manifest_schema_drift_free() -> None:
     if not isinstance(props, dict):
         raise DataContractError("schema.drift", "JSON Schema schema_version drift")
     version_spec = props.get("schema_version")
-    if not isinstance(version_spec, dict) or version_spec.get("const") != enums["schema_version"]:
+    if not isinstance(version_spec, dict) or version_spec.get("const") != version:
         raise DataContractError("schema.drift", "JSON Schema schema_version drift")
+
+
+def assert_manifest_schema_drift_free() -> None:
+    schema = load_json_schema()
+    enums = python_enums_for_schema()
+    _assert_schema_enums(
+        schema,
+        {
+            "AcquisitionMethod": enums["acquisition_methods"],
+            "DataSensitivity": enums["sensitivities"],
+            "MediaTypeStatus": enums["media_type_statuses"],
+            "RedactionState": enums["redaction_states"],
+            "RightsVerification": enums["rights_verifications"],
+            "SourceType": enums["source_types"],
+        },
+        version=str(enums["schema_version"]),
+    )
+
+
+DATASET_SCHEMA_PATH = Path(__file__).resolve().parent / "schemas" / "dataset_manifest.d1.v1.json"
+SNAPSHOT_SCHEMA_PATH = Path(__file__).resolve().parent / "schemas" / "ingestion_snapshot.d1.v1.json"
+
+
+def canonical_dumps_dataset(manifest: DatasetManifest) -> str:
+    obj = require_json_object(manifest.to_dict(), label="document", max_depth=DOCUMENT_JSON_DEPTH)
+    return canonical_dumps(obj)
+
+
+def loads_dataset(text: str) -> DatasetManifest:
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise DataContractError("dataset.json", "document is not valid JSON") from exc
+    if not isinstance(data, dict):
+        raise DataContractError("dataset.json", "document must be an object")
+    if data.get("schema_version") != DATASET_SCHEMA_VERSION:
+        raise DataContractError("dataset.schema", "unsupported dataset schema version")
+    return DatasetManifest.from_dict(data)
+
+
+def canonical_dumps_snapshot(snapshot: IngestionSnapshot) -> str:
+    obj = require_json_object(snapshot.to_dict(), label="document", max_depth=DOCUMENT_JSON_DEPTH)
+    return canonical_dumps(obj)
+
+
+def loads_snapshot(text: str) -> IngestionSnapshot:
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise DataContractError("snapshot.json", "document is not valid JSON") from exc
+    if not isinstance(data, dict):
+        raise DataContractError("snapshot.json", "document must be an object")
+    if data.get("schema_version") != SNAPSHOT_SCHEMA_VERSION:
+        raise DataContractError("snapshot.schema", "unsupported snapshot schema version")
+    return IngestionSnapshot.from_dict(data)
+
+
+def assert_dataset_schema_drift_free() -> None:
+    schema = _load_schema_file(DATASET_SCHEMA_PATH)
+    _assert_schema_enums(
+        schema,
+        {
+            "DatasetSplit": [member.value for member in DatasetSplit],
+            "IntendedUse": [member.value for member in IntendedUse],
+        },
+        version=DATASET_SCHEMA_VERSION,
+    )
+
+
+def assert_snapshot_schema_drift_free() -> None:
+    schema = _load_schema_file(SNAPSHOT_SCHEMA_PATH)
+    _assert_schema_enums(
+        schema,
+        {
+            "IngestionFindingSeverity": [member.value for member in IngestionFindingSeverity],
+            "IngestionState": [member.value for member in IngestionState],
+        },
+        version=SNAPSHOT_SCHEMA_VERSION,
+    )
+
+
+def assert_data_schema_drift_free() -> None:
+    assert_manifest_schema_drift_free()
+    assert_dataset_schema_drift_free()
+    assert_snapshot_schema_drift_free()
