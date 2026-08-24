@@ -38,7 +38,21 @@ candidate sets, evidence edges, attribution states, correction attempts,
 ordering permutations, and canonical JSON round trips. They never load private
 research data.
 
-## Collection gates
+## CI (T1J)
+
+Four focused jobs run on Ubuntu with Python 3.11:
+
+* `quality` — compile, Ruff format/lint, mypy
+* `tests` — unit, property, conformance, coverage floors, schema drift; reports test count, skip count, and coverage
+* `package` — sdist/wheel, content inspection, twine, isolated install
+* `security-public-tree` — public-tree scan and dependency audit
+
+macOS is not part of CI and is not claimed. Skips are never counted as passes. Model integration is not claimed.
+
+## Packaging (T1I)
+
+`python3.11 scripts/verify.py --job package` builds sdist and wheel, checks that JSON Schema and `py.typed` are included, excludes tests and development files, runs `twine check`, and installs the wheel into an empty virtualenv that does not depend on the source checkout.
+
 
 CI fails if unit, property, or conformance collection drops to zero, if
 collection errors occur, or if unexpected skips appear in the core suite.

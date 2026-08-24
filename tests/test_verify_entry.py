@@ -56,6 +56,36 @@ def test_verify_step_order_is_stable() -> None:
     ]
 
 
+def test_verify_jobs_cover_documented_steps() -> None:
+    verify = _load_verify()
+    union = set()
+    for names in verify.JOB_STEPS.values():
+        union.update(names)
+    step_names = {name for name, _args in verify.STEPS}
+    assert step_names <= union
+    assert verify.parse_jobs([]) == frozenset(verify.JOB_NAMES)
+    assert verify.parse_jobs(["--job", "quality"]) == frozenset({"quality"})
+
+
+def test_inspect_wheel_requires_schema_and_excludes_tests(tmp_path: Path) -> None:
+    import zipfile
+
+    verify = _load_verify()
+    wheel = tmp_path / "demo.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("speaker_attribution_video/py.typed", "")
+        archive.writestr("speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json", "{}")
+        archive.writestr("speaker_attribution_video/cli.py", "x=1\n")
+    verify.inspect_wheel(wheel)
+    bad = tmp_path / "bad.whl"
+    with zipfile.ZipFile(bad, "w") as archive:
+        archive.writestr("speaker_attribution_video/py.typed", "")
+        archive.writestr("speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json", "{}")
+        archive.writestr("tests/secret.py", "assert False\n")
+    with pytest.raises(verify.StepFailure):
+        verify.inspect_wheel(bad)
+
+
 def test_run_step_preserves_nonzero_exit(tmp_path: Path) -> None:
     verify = _load_verify()
     with pytest.raises(verify.StepFailure) as exc:

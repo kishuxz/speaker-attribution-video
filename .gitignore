@@ -44,6 +44,9 @@ venv/
 .coverage
 coverage.xml
 htmlcov/
+junit.xml
+build/
+dist/
 
 # Accidental pip stdout filenames
 /=0.10.0

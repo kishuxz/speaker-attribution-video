@@ -4,9 +4,11 @@ Speaker Attribution Graph is a production-shaped framework for tracing how audio
 
 This repository (`kishuxz/speaker-attribution-video`) holds original source under Apache-2.0. It is **private during T1**. It is not a release of a production pipeline, and it does not ship models, datasets, or research media.
 
-## Current phase (T1A/T1B)
+## Current phase (T1)
 
-G1 typed evidence-graph **contracts** are in place. T1 is adding a model-free verification system (tooling, quality gates, later backend conformance). There is still **no** real diarization, transcription, model inference, or agent execution.
+T1 is the model-free verification foundation. It provides pinned Python 3.11 tooling, `scripts/verify.py`, G1 graph contracts, backend protocols, deterministic fake backends, reusable conformance suites, Hypothesis properties, coverage gates, packaging checks, and Linux CI. There is still **no** real audio processing, diarization, transcription, model inference, agent execution, or public demo.
+
+Passing a conformance suite does **not** prove model accuracy. Coverage is evidence of execution, not correctness. Synthetic fixtures are not benchmark data. Model, GPU, and integration tests have not run.
 
 ```bash
 python3.11 -m pip install -r requirements.lock
@@ -18,7 +20,11 @@ python3.11 scripts/verify.py
 
 Python **3.11** is the only supported runtime (`requires-python = ">=3.11,<3.12"`). A local Mac running Python 3.14 is an environment mismatch, not a product failure.
 
+CI runs four focused jobs on **Ubuntu / Python 3.11**: `quality`, `tests`, `package`, and `security-public-tree`. macOS is not claimed.
+
 Regenerate lockfiles only with the commands in `requirements/README.md`. Do not hand-edit compiled lock output.
+
+See `docs/TESTING.md`, `docs/BACKEND_CONTRACTS.md`, `docs/LIMITATIONS.md`, `docs/GRAPH.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
 
 ## What this is not
 
@@ -26,6 +32,4 @@ Regenerate lockfiles only with the commands in `requirements/README.md`. Do not 
 - Not a redistribution of television corpora, transcripts, or logs
 - Not a bundle of pyannote, WhisperX, ECAPA, Llama, InsightFace, or LightASD weights
 - InsightFace and LightASD remain **research-only / license review required**
-- Conformance and coverage, when added, do not prove model accuracy or correctness
-
-See `docs/LIMITATIONS.md`, `docs/GRAPH.md`, `docs/MODEL_POLICY.md`, and `THIRD_PARTY_NOTICES.md`.
+- Conformance and coverage do not prove model accuracy or correctness

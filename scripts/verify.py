@@ -11,15 +11,55 @@ environment mismatch, not a product failure.
 
 from __future__ import annotations
 
+import argparse
 import os
 import subprocess
 import sys
+import tarfile
 import tempfile
 import venv
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUPPORTED = (3, 11)
+JOB_NAMES = ("quality", "tests", "package", "security-public-tree")
+REQUIRED_WHEEL_PATHS = (
+    "speaker_attribution_video/py.typed",
+    "speaker_attribution_video/graph/schemas/evidence_graph.g1.v1.json",
+)
+FORBIDDEN_ARCHIVE_PREFIXES = (
+    "tests/",
+    "scripts/",
+    ".github/",
+    "requirements/",
+    "docs/",
+    ".hypothesis/",
+    ".pytest_cache/",
+)
+FORBIDDEN_ARCHIVE_NAMES = frozenset({".coverage", "coverage.xml", "junit.xml", ".env"})
+JOB_STEPS: dict[str, frozenset[str]] = {
+    "quality": frozenset({"source-compile", "ruff-format", "ruff-lint", "mypy"}),
+    "tests": frozenset(
+        {
+            "unit-tests",
+            "property-tests",
+            "conformance-tests",
+            "coverage-check",
+            "coverage-graph-core",
+            "json-schema-drift",
+        }
+    ),
+    "package": frozenset(
+        {
+            "package-build",
+            "inspect-package",
+            "wheel-metadata",
+            "clean-wheel-install",
+        }
+    ),
+    "security-public-tree": frozenset({"public-tree-scan", "dependency-audit"}),
+}
 
 STEPS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("public-tree-scan", ("scripts/check_public_tree.py",)),
@@ -41,6 +81,8 @@ STEPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "--cov=speaker_attribution_video",
             "--cov-branch",
             "--cov-report=term-missing",
+            "--cov-report=xml:coverage.xml",
+            "--junitxml=junit.xml",
             "--cov-fail-under=90",
         ),
     ),
@@ -98,6 +140,91 @@ def venv_python(venv_dir: Path) -> Path:
     return venv_dir / "bin" / "python"
 
 
+def parse_jobs(argv: list[str] | None) -> frozenset[str]:
+    parser = argparse.ArgumentParser(prog="verify.py")
+    parser.add_argument(
+        "--job",
+        action="append",
+        choices=JOB_NAMES,
+        dest="jobs",
+        help="Run one focused CI job. Repeatable. Default: all jobs in documented order.",
+    )
+    args = parser.parse_args(argv)
+    if not args.jobs:
+        return frozenset(JOB_NAMES)
+    return frozenset(args.jobs)
+
+
+def selected_step_names(jobs: frozenset[str]) -> frozenset[str]:
+    names: set[str] = set()
+    for job in jobs:
+        names.update(JOB_STEPS[job])
+    return frozenset(names)
+
+
+def _archive_relative(name: str) -> str:
+    normalized = name.replace("\\", "/")
+    parts = normalized.split("/", 1)
+    if len(parts) == 2 and parts[0].startswith("speaker_attribution_video-"):
+        return parts[1]
+    return normalized
+
+
+def _forbidden_member(name: str) -> str | None:
+    relative = _archive_relative(name)
+    if Path(relative).name in FORBIDDEN_ARCHIVE_NAMES:
+        return Path(relative).name
+    first = relative.split("/", 1)[0]
+    forbidden_roots = {prefix.rstrip("/") for prefix in FORBIDDEN_ARCHIVE_PREFIXES}
+    if first in forbidden_roots:
+        return first
+    return None
+
+
+def inspect_wheel(wheel: Path) -> None:
+    print("==> inspect-package", flush=True)
+    with zipfile.ZipFile(wheel) as archive:
+        names = [
+            info.filename.replace("\\", "/") for info in archive.infolist() if not info.is_dir()
+        ]
+    missing = [path for path in REQUIRED_WHEEL_PATHS if path not in names]
+    if missing:
+        print(
+            f"FAILED step='inspect-package' exit=1 cmd='missing wheel paths {missing}'",
+            flush=True,
+        )
+        raise StepFailure(1)
+    forbidden = [name for name in names if _forbidden_member(name)]
+    if forbidden:
+        print(
+            f"FAILED step='inspect-package' exit=1 cmd='forbidden wheel paths {forbidden[:8]}'",
+            flush=True,
+        )
+        raise StepFailure(1)
+    print(f"inspect-package wheel members={len(names)} required=ok excluded=ok", flush=True)
+
+
+def inspect_sdist(sdist: Path) -> None:
+    with tarfile.open(sdist, "r:gz") as archive:
+        names = [
+            member.name.replace("\\", "/") for member in archive.getmembers() if member.isfile()
+        ]
+    forbidden = [name for name in names if _forbidden_member(name)]
+    if forbidden:
+        print(
+            f"FAILED step='inspect-package' exit=1 cmd='forbidden sdist paths {forbidden[:8]}'",
+            flush=True,
+        )
+        raise StepFailure(1)
+    if not any(name.endswith("graph/schemas/evidence_graph.g1.v1.json") for name in names):
+        print("FAILED step='inspect-package' exit=1 cmd='sdist missing JSON Schema'", flush=True)
+        raise StepFailure(1)
+    if not any(name.endswith("py.typed") for name in names):
+        print("FAILED step='inspect-package' exit=1 cmd='sdist missing py.typed'", flush=True)
+        raise StepFailure(1)
+    print(f"inspect-package sdist members={len(names)} required=ok excluded=ok", flush=True)
+
+
 def package_build() -> Path:
     dist = ROOT / "dist"
     if dist.exists():
@@ -141,10 +268,20 @@ def clean_wheel_install(wheel: Path) -> None:
             [
                 str(py),
                 "-c",
+                "import pathlib; "
+                "import speaker_attribution_video; "
+                "import speaker_attribution_video.backends; "
+                "import speaker_attribution_video.cli; "
+                "import speaker_attribution_video.graph; "
+                "import speaker_attribution_video.integrations; "
                 "from speaker_attribution_video import __version__; "
                 "from speaker_attribution_video.cli import main; "
                 "from speaker_attribution_video.graph import GRAPH_SCHEMA_VERSION, TimeSpan; "
-                "assert __version__; TimeSpan(0, 1); print(__version__, GRAPH_SCHEMA_VERSION)",
+                "from speaker_attribution_video.graph.time import TimeSpan as TS; "
+                "path = pathlib.Path(speaker_attribution_video.__file__).resolve(); "
+                "assert 'site-packages' in path.parts, path; "
+                "assert __version__; TS(0, 1); "
+                "print(__version__, GRAPH_SCHEMA_VERSION, path)",
             ],
             env=isolated_env,
         )
@@ -170,16 +307,28 @@ def dependency_audit() -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    del argv
     try:
         require_python_311()
         os.chdir(ROOT)
+        jobs = parse_jobs(argv)
+        selected = selected_step_names(jobs)
+        print(f"verify jobs={','.join(sorted(jobs))}", flush=True)
         for name, args in STEPS:
-            run_step(name, python_cmd(*args))
-        wheel = package_build()
-        wheel_metadata_check()
-        clean_wheel_install(wheel)
-        dependency_audit()
+            if name in selected:
+                run_step(name, python_cmd(*args))
+        if "package-build" in selected:
+            wheel = package_build()
+            sdists = sorted((ROOT / "dist").glob("*.tar.gz"))
+            if "inspect-package" in selected:
+                inspect_wheel(wheel)
+                if sdists:
+                    inspect_sdist(sdists[-1])
+            if "wheel-metadata" in selected:
+                wheel_metadata_check()
+            if "clean-wheel-install" in selected:
+                clean_wheel_install(wheel)
+        if "dependency-audit" in selected:
+            dependency_audit()
     except StepFailure as exc:
         code = exc.code
         if isinstance(code, str):
@@ -191,4 +340,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))
