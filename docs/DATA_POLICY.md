@@ -5,7 +5,7 @@
 - Original source is Apache-2.0.
 - **No research datasets, transcripts, media, weights, W&B metadata, or SLURM logs** may be committed.
 - Synthetic fixtures are allowed **only** under `tests/fixtures/synthetic/` and must not use real show names or copyrighted dialogue.
-- The repository is **private** during D1. Publication does not license third-party data.
+- Publication does not license third-party data.
 
 ## Graph payloads
 

@@ -9,10 +9,12 @@ reports.
 Do not attach credentials, private research data, transcripts, or model weights
 to reports.
 
-## Scope (F0)
+## Scope
 
-This repository is a foundation: documentation, an empty typed package, and a
-CLI stub. There is no deployed service and no model-download path.
+This repository is a foundation: documentation, typed graph/data contracts,
+deterministic local/synthetic ingestion, and verification tooling. There is no
+deployed service, public demo, model-download path, or real media-processing
+pipeline.
 
 ## Policy
 
