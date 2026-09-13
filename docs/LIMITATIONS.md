@@ -20,4 +20,4 @@
 - Third-party tools (pyannote, WhisperX, Llama, ECAPA) have their own hardware, license, and quality limits and are not integrated.
 - Python **3.11** is the only supported runtime. Local Python 3.14 is an environment mismatch, not a product failure.
 - CI is Linux (Ubuntu) on Python 3.11. macOS is not a verified claim.
-- This repository is private during D1; Apache-2.0 on original source does not imply a public release.
+- Apache-2.0 applies to the original source in this repository only. It does not license third-party datasets, media, transcripts, model weights, or research assets.

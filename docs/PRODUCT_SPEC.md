@@ -33,4 +33,4 @@ Researchers and engineers who need an auditable speaker-attribution pipeline for
 
 ## Repository status
 
-`kishuxz/speaker-attribution-video` is **private** during D1. Making it public is a separate decision.
+Making `kishuxz/speaker-attribution-video` public is a separate publication decision. Public visibility does not change the phase scope, license boundaries, or the prohibition on redistributing third-party data.

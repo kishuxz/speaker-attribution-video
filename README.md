@@ -2,11 +2,11 @@
 
 Speaker Attribution Graph is a production-shaped framework for tracing how audio, transcript and optional video evidence become speaker-attribution decisions. It separates deterministic diarization from bounded attribution agents, preserves unresolved cases, and exposes evidence graphs, evaluation and observability.
 
-This repository (`kishuxz/speaker-attribution-video`) holds original source under Apache-2.0. It is **private during D1**. It is not a release of a production pipeline, and it does not ship models, datasets, or research media.
+This repository (`kishuxz/speaker-attribution-video`) holds original source under Apache-2.0. It is a public-project foundation, not a release of a production pipeline, and it does not ship models, datasets, or research media.
 
-## Current phase (D1)
+## Current phase
 
-T1 (model-free verification) is complete. D1 adds **safe data contracts**, **source-neutral local/synthetic connectors**, a **manifest-only snapshot store**, a **fail-closed policy evaluator**, and **G1 projection of accepted ingestions**. There is still **no** real audio processing, diarization, transcription, network dataset connector, model inference, agent execution, or public demo. Local ingestion is not license verification. The policy engine is not legal advice.
+T1 (model-free verification) and D1 (safe data contracts and local/synthetic ingestion) are complete on `main`. D1 adds **safe data contracts**, **source-neutral local/synthetic connectors**, a **manifest-only snapshot store**, a **fail-closed policy evaluator**, and **G1 projection of accepted ingestions**. There is still **no** real audio processing, diarization, transcription, network dataset connector, model inference, agent execution, or public demo. Local ingestion is not license verification. The policy engine is not legal advice.
 
 Passing a conformance suite does **not** prove model accuracy. Coverage is evidence of execution, not correctness. Synthetic fixtures are not benchmark data. Model, GPU, and integration tests have not run.
 
